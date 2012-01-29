@@ -1,0 +1,18 @@
+<html>
+<META http-equiv="Content-Type" content="text/html; charset=shift-jis">
+<body>
+例外が発生しました。<br><br>
+理由：
+<serverscript>
+serverout.write(exception.getMessage());
+</serverscript>
+<br>
+
+例外URL：
+<serverscript>
+serverout.write(exception.getInitFullURL());
+</serverscript>
+<br/><br/>
+<a href='ValidateForm.es'>戻る</a>
+</body>
+</html>

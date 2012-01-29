@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site version="1.0" class="info.dragonlady.scriptlet.DefaultScriptlet">
+	<page path="/index.es"/>
+	<page path="/HelloWorldScriptlet.es"/>
+	<page path="/utf8.es"/>
+	<page path="/ValidateForm.es"/>
+	<page path="/ValidateResult.es"/>
+	<page path="/ExceptionTest.es"/>
+	<page path="/ExceptionIssu.es"/>
+	<page path="/ListScroll.es" class="info.dragonlady.scriptlet.demo.ListScrollScript"/>
+	<page path="/LiveConnect.es"/>
+	<page path="/LiveConnectResult.es"/>
+	<page path="/e4x.es"/>
+	<page path="/e4xYahooRSS.es"/>
+	<page path="/DynamicLoad.es"/>
+	<page path="/DynamicLoadResult.es"/>
+	<page path="/DocumentTest.es"/>
+	<page path="/DocumentTestResult.es"/>
+	<page path="/DBTest.es"/>
+	<page path="/DBList.es"/>
+	<page path="/DB_DELETE/DBDelete.es"/>
+	<page path="/DB_DELETE/DBDeleteResult.es"/>
+	<page path="/DB_INSERT/DBInsert.es"/>
+	<page path="/DB_INSERT/DBInsertResult.es"/>
+	<page path="/aboutscriptlet.html"/>
+	<page path="/api/apitest.es"/>
+</site>
+

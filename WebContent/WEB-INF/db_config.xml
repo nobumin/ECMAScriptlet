@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties version='1.0'>
+  <entry key='jdbcDriver'>org.postgresql.Driver</entry>
+  <entry key='dbUrl'>jdbc:postgresql://127.0.0.1:5432/postgres</entry>
+  <entry key='dbUserId'>postgres</entry>
+  <entry key='dbPassword'>postgres</entry>
+  
+  <!--
+  <entry key='jdbcDriver'>com.mysql.jdbc.Driver</entry>
+  <entry key='dbUrl'>jdbc:mysql://127.0.0.1:3306/test</entry>
+  <entry key='dbUserId'>root</entry>
+  <entry key='dbPassword'>********</entry>
+  -->
+  
+  <entry key='listsql'>
+  <![CDATA[
+  SELECT * FROM sampletable ORDER BY no
+  ]]>
+  </entry>
+  <entry key='insertsql'>
+  <![CDATA[
+  INSERT INTO sampletable (no, name) VALUES(?, ?)
+  ]]>
+  </entry>
+  <entry key='deletesql'>
+  <![CDATA[
+  DELETE FROM sampletable WHERE no=?
+  ]]>
+  </entry>
+</properties>
+  
