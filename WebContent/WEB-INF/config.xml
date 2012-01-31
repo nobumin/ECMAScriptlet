@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties version='1.0'>
+  <comment>DEFAULT PROPERTIES</comment>
+  <!-- スクリプト格納先を任意のフォルダに設定します。 
+  <entry key='scriptlet_path'>/Users/Shared/work_folder/DEVELOPPING/ServerEScript/ses/WEB-INF/scriptlet</entry>
+  -->
+  <!-- シーケンス管理を行なうか否かを設定します。 -->
+  <entry key='sequence_control'>true</entry>
+  <!-- サイトマップ設定を任意のパスに設定します。
+  <entry key='sitemap'>/Users/Shared/work_folder/DEVELOPPING/ServerEScript/ses/WEB-INF/sitemap.xml</entry>
+  -->
+  <!-- DBオブジェクトを利用するか否かを設定します。 -->
+  <entry key='dbobject'>false</entry>
+  <!-- entry key='dbconfig'>/etc/httpd/db_config.xml</entry -->
+  <!-- DB設定を任意のパスに設定します。
+  <entry key='dbconfig'>/Users/Shared/work_folder/DEVELOPPING/ServerEScript/ses/WEB-INF/db_config.xml</entry>
+  -->
+  <!-- Content-Lengthヘッダを強制的に応答するかを設定します。 
+  <entry key='force_content_length'>true</entry>
+  -->
+  <!-- 共通エラー画面を利用する場合に設定します。 
+  <entry key='common_error'>common_error.es</entry>
+  -->
+  <!-- サービス停止時の画面を設定します。 
+  <entry key='out_of_service'>out_of_service.es</entry>
+  -->
+  <entry key='onloadTemplate'>
+<![CDATA[
+@importScript '%s';
+serverout.write(%s);
+]]>
+  </entry>
+  <!-- Scriptlet file extend name here -->
+  <entry key='extendName'>.es</entry>
+</properties>
+  
