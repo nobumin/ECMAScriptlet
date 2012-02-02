@@ -69,6 +69,7 @@ serverout.write("<a href='"+helper.createNoCookieURL("ListScroll.es")+"?next=0' 
 <a href="DynamicLoad.es">外部スクリプトの動的ロード機能デモ</a><br>
 <a href="DocumentTest.es">onloadイベントの利用およびdocumentオブジェクトの利用デモ</a><br>
 <a href="DBTest.es">汎用DBオブジェクト”dbaccesser”の利用デモ</a><br>
+<a href="MongoDemo.es">MongoDBオブジェクト”mongodb”の利用デモ</a><br>
 <!-- cache control for safari -->
 <iframe style="height:0px;width:0px;visibility:hidden" src="about:blank">
     this frame prevents back forward cache

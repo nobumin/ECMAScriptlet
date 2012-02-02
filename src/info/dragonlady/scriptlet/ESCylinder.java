@@ -299,6 +299,9 @@ public class ESCylinder{
 		ScriptableObject.putProperty(cylinder.scriptable, "navigator", jsNavigator);
 		Object jsDBAccesser = Context.javaToJS(cylinder.scriptlet.getDBAccessObject(), cylinder.scriptable);
 		ScriptableObject.putProperty(cylinder.scriptable, "dbaccesser", jsDBAccesser);
+		Object jsMongoAccesser = Context.javaToJS(cylinder.scriptlet.getMongoDBAccesser(), cylinder.scriptable);
+		ScriptableObject.putProperty(cylinder.scriptable, "mongodb", jsMongoAccesser);
+		
 		return cylinder;
 	}
 

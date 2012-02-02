@@ -16,6 +16,13 @@
   <!-- DB設定を任意のパスに設定します。
   <entry key='dbconfig'>/Users/Shared/work_folder/DEVELOPPING/ServerEScript/ses/WEB-INF/db_config.xml</entry>
   -->
+
+  <!-- MongoDBオブジェクトを利用するか否かを設定します。 -->
+  <entry key='mongodbject'>false</entry>
+  <!-- DB設定を任意のパスに設定します。
+  <entry key='mongodbconfig'>/Users/Shared/work_folder/DEVELOPPING/ServerEScript/ses/WEB-INF/mongodb.xml</entry>
+  -->
+
   <!-- Content-Lengthヘッダを強制的に応答するかを設定します。 
   <entry key='force_content_length'>true</entry>
   -->

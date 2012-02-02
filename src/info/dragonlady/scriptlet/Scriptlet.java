@@ -1,6 +1,7 @@
 package info.dragonlady.scriptlet;
 
 import info.dragonlady.util.DBAccesser;
+import info.dragonlady.util.MongoDBAccesser;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -79,6 +80,10 @@ abstract public class Scriptlet implements Serializable {
 	 */
 	public DBAccesser getDBAccessObject() {
 		return secServlet.getDBAccessObject();
+	}
+	
+	public MongoDBAccesser getMongoDBAccesser() {
+		return secServlet.getMongoDBAccesser();
 	}
 	
 	/**

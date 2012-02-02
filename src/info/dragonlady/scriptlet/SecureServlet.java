@@ -1,6 +1,7 @@
 package info.dragonlady.scriptlet;
 
 import info.dragonlady.util.DBAccesser;
+import info.dragonlady.util.MongoDBAccesser;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -44,6 +45,8 @@ public class SecureServlet extends HttpServlet {
 	private String SITEMAP_PATH = "sitemap";
 	private String DBCONFIG_PATH = "dbconfig";
 	private String DBOBJECT_CONTROL = "dbobject";
+	private String MONGO_DBOBJECT_CONTROL = "mongodbject";
+	private String MONGO_DBCONFIG_PATH = "mongodbconfig";
 	private String EXT_NAME = "extendName";
 	private String ERROR_PAGE = "common_error";
 	private String OUT_OF_SERVICE = "out_of_service";
@@ -53,9 +56,11 @@ public class SecureServlet extends HttpServlet {
 	protected String scriptletPath = "WEB-INF"+File.separator+"scriptlet"+File.separator;
 	protected String sitemapPath = "WEB-INF"+File.separator+"sitemap.xml";
 	protected String dbConfigPath = "WEB-INF"+File.separator+"db_config.xml";
+	protected String mongoDBConfigPath = "WEB-INF"+File.separator+"mongodb.xml";
 	protected Document sitemapXML = null;
 	protected String defaultScriptClassName = null;
 	protected DBAccesser dbaccesser = null;
+	protected MongoDBAccesser mongoDBAccesser = null;
 	protected String extendName = null;
 	private Properties properties = new Properties();
 	private long sitemapFileModify = -1;
@@ -149,10 +154,51 @@ public class SecureServlet extends HttpServlet {
 		return false;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public DBAccesser getDBAccessObject() {
 		return dbaccesser;
 	}
 	
+	/**
+	 * 
+	 * @throws SystemErrorException
+	 */
+	protected void setupMongoDBObject() throws SystemErrorException {
+		try {
+			if(useMongoDBObject()) {
+				String mongoDBConfigXMLPath = getRealPath() + mongoDBConfigPath;
+				if(properties.getProperty(MONGO_DBCONFIG_PATH) != null && properties.getProperty(MONGO_DBCONFIG_PATH).length() > 2) {
+					mongoDBConfigXMLPath = properties.getProperty(MONGO_DBCONFIG_PATH);
+				}
+				mongoDBAccesser = new MongoDBAccesser(new FileInputStream(mongoDBConfigXMLPath));
+			}
+		}
+		catch(Exception e) {
+			throw new SystemErrorException(e);
+		}
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean useMongoDBObject() {
+		if(properties.getProperty(MONGO_DBOBJECT_CONTROL) != null && Boolean.parseBoolean(properties.getProperty(MONGO_DBOBJECT_CONTROL))) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public MongoDBAccesser getMongoDBAccesser() {
+		return mongoDBAccesser;
+	}
 	/**
 	 * @throws IllegalAccessException
 	 * @throws SystemErrorException 
@@ -169,6 +215,7 @@ public class SecureServlet extends HttpServlet {
 //		setContentType(DEFAULT_CONTENT_TYPE);
 		setupSiteMap(req.getSession());
 		setupDBObject();
+		setupMongoDBObject();
 		verifyRequest(req);
 	}
 	
