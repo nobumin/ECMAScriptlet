@@ -275,33 +275,53 @@ public class ESEngine {
 		String line = null;
 		boolean hasMetaTag = false;
 		String charCode = null;
-		while((line = reader.readLine()) != null) {
-			//search this line
-			//<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-			if(line.toLowerCase().indexOf("meta") > -1) {
-				hasMetaTag = true;
-			}
-			if(hasMetaTag && line.toLowerCase().indexOf("charset=") > -1) {
-				String metaCharsetValue = line.substring(line.toLowerCase().indexOf("charset=")+"charset=".length());
-				Pattern p = Pattern.compile("(^[a-zA-Z0-9\\-_]+).*");
-				Matcher m = p.matcher(metaCharsetValue.replaceAll("[\"']", ""));
-				if(m.matches()) {
-					charCode = m.group(1);
+		try {
+			while((line = reader.readLine()) != null) {
+				//search this line
+				//<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+				if(line.toLowerCase().indexOf("meta") > -1) {
+					hasMetaTag = true;
 				}
-				break;
+				if(hasMetaTag && line.toLowerCase().indexOf("charset=") > -1) {
+					String metaCharsetValue = line.substring(line.toLowerCase().indexOf("charset=")+"charset=".length());
+					Pattern p = Pattern.compile("(^[a-zA-Z0-9\\-_]+).*");
+					Matcher m = p.matcher(metaCharsetValue.replaceAll("[\"']", ""));
+					if(m.matches()) {
+						charCode = m.group(1);
+					}
+					break;
+				}
+				script.append(line);
+				script.append("\n");
 			}
-			script.append(line);
-			script.append("\n");
 		}
-		reader.close();
+		catch(IOException e ){
+			throw e;
+		}
+		finally{
+			if(reader != null) {
+				reader.close();
+			}
+		}
+		reader=null;
 
 		if(charCode != null) {
 			contentCharcode = charCode;
 			script = new StringBuffer();
-			reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charCode));
-			while((line = reader.readLine()) != null) {
-				script.append(line);
-				script.append("\n");
+			try {
+				reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charCode));
+				while((line = reader.readLine()) != null) {
+					script.append(line);
+					script.append("\n");
+				}
+			}
+			catch(IOException e ){
+				throw e;
+			}
+			finally{
+				if(reader != null) {
+					reader.close();
+				}
 			}
 		}
 		
@@ -405,9 +425,15 @@ public class ESEngine {
 			errorFileName = scriptFileName + errorSufttix;
 			
 			File scriptFile = new File(engine.scriptPath+scriptFileName);
-			if(scriptsLastModify.get(scriptFileName) != scriptFile.lastModified()) {
-				scriptsMap.put(scriptFileName, engine.loadScript(scriptFile));
-				scriptsLastModify.put(scriptFileName, scriptFile.lastModified());
+			if(scriptFile.exists()) {
+				if(scriptsLastModify.get(scriptFileName) == null || scriptsLastModify.get(scriptFileName) != scriptFile.lastModified()) {
+					scriptsMap.put(scriptFileName, engine.loadScript(scriptFile));
+					scriptsLastModify.put(scriptFileName, scriptFile.lastModified());
+				}
+			}else{
+				scriptsMap.remove(scriptFileName);
+				scriptsLastModify.remove(scriptFileName);
+				throw new NotFoundException("404 not found");
 			}
 			scriptlet.setCharSet(engine.getContentCharcode());
 			
@@ -457,6 +483,9 @@ public class ESEngine {
 					scriptlet.getResponse().getWriter().flush();
 				}
 			}
+		}
+		catch(NotFoundException e) { //404
+			throw new ESException(new IOException("not found script"));
 		}
 		catch(Exception e) {
 			if(cylinder != null) {
