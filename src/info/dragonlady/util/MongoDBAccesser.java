@@ -15,6 +15,7 @@ import org.bson.BasicBSONEncoder;
 import org.bson.io.BasicOutputBuffer;
 import org.bson.io.OutputBuffer;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -161,6 +162,13 @@ public class MongoDBAccesser {
 		return new BasicDBObject();
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
+	public BasicDBList createDBList() {
+		return new BasicDBList();
+	}
 	/**
 	 * 
 	 * @param object
