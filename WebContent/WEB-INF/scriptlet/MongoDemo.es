@@ -2,6 +2,7 @@
 <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <body>
 <serverscript>
+mongodb.open();
 var col1 = mongodb.getCollection("test1");
 serverout.write("test1<br/>");
 serverout.write(col1.findOne());
@@ -43,7 +44,7 @@ while(cur.hasNext()) {
 	serverout.write("<br/>");
 }
 
-
+mongodb.close();
 </serverscript>
 <br>
 <a href='.'>戻る</a>

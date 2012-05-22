@@ -40,7 +40,6 @@ public class MongoDBAccesser {
 		try {
 			properties = new Properties();
 			properties.loadFromXML(is);
-			initialize();
 		}
 		catch(Exception e) {
 			throw new UtilException(e);
@@ -56,7 +55,6 @@ public class MongoDBAccesser {
 		try {
 			properties = new Properties();
 			properties = prop;
-			initialize();
 		}
 		catch(Exception e) {
 			throw new UtilException(e);
@@ -103,11 +101,22 @@ public class MongoDBAccesser {
 	}
 	
 	/**
+	 * @throws UtilException 
+	 * @throws MongoException 
+	 * @throws UnknownHostException 
+	 * 
+	 */
+	public void open() throws UnknownHostException, MongoException, UtilException {
+		initialize();
+	}
+	
+	/**
 	 * 
 	 */
 	public void close() {
 		if(mongodb != null) {
 			mongodb.getMongo().close();
+			mongodb = null;
 		}
 	}
 	
