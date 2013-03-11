@@ -67,9 +67,16 @@ public class WebSocketScriptlet extends WebSocketServlet {
 		public String query;
 		public String response;
 		public String excute;
+		public String session;
 		
 		public void setResult(String value) {
 			response = new String(value);
+		}
+		public void clearResult() {
+			response = null;
+		}
+		public void setSession(String value) {
+			session = new String(value);
 		}
 	}
 	
@@ -132,8 +139,15 @@ public class WebSocketScriptlet extends WebSocketServlet {
 
 		@Override
 		protected void onTextMessage(CharBuffer text) throws IOException {
+			String session = null;
+			if(_baseJson != null && _baseJson.session != null && _baseJson.session.length() > 0) {
+				session = _baseJson.session;
+			}
 			Gson gson = new Gson();
 			_baseJson = gson.fromJson(text.toString(), BaseJsonRequest.class);
+			if(session != null) {
+				_baseJson.setSession(session);
+			}
 			execScript(true);
 		}
 		
@@ -151,15 +165,19 @@ public class WebSocketScriptlet extends WebSocketServlet {
 					_baseJson.setResult("");
 					WSScriptlet scriptlet = buildScriptlet(path);
 					if(scriptlet != null) {
+						_baseJson.clearResult();
 						scriptlet.setServlet(_wsScriptlet);
 						scriptlet.start(_baseJson, !isRequest);
+						//正常
 						//charSetCodeでBaseJsonRequest#responseを文字コード設定?
 						//TODO						
-						CharBuffer cbuff = CharBuffer.allocate(_baseJson.response.length());
-						cbuff.position(0);
-						cbuff.put(_baseJson.response);
-						cbuff.position(0);
-						_outbound.writeTextMessage(cbuff);
+						if(_baseJson.response.length() > 0) {
+							CharBuffer cbuff = CharBuffer.allocate(_baseJson.response.length());
+							cbuff.position(0);
+							cbuff.put(_baseJson.response);
+							cbuff.position(0);
+							_outbound.writeTextMessage(cbuff);
+						}
 					}else{
 						String staticFilePath = getScriptletPath() + path;
 						//実ファイルの存在チェック
@@ -186,15 +204,19 @@ public class WebSocketScriptlet extends WebSocketServlet {
 							}
 							if(staticFilePath.endsWith(extendName)) {
 								scriptlet = buildScriptlet(path);
+								_baseJson.clearResult();
 								scriptlet.setServlet(_wsScriptlet);
 								scriptlet.start(_baseJson, !isRequest);
+								//正常
 								//charSetCodeでBaseJsonRequest#responseを文字コード設定?
 								//TODO
-								CharBuffer cbuff = CharBuffer.allocate(_baseJson.response.length());
-								cbuff.position(0);
-								cbuff.put(_baseJson.response);
-								cbuff.position(0);
-								_outbound.writeTextMessage(cbuff);
+								if(_baseJson.response.length() > 0) {
+									CharBuffer cbuff = CharBuffer.allocate(_baseJson.response.length());
+									cbuff.position(0);
+									cbuff.put(_baseJson.response);
+									cbuff.position(0);
+									_outbound.writeTextMessage(cbuff);
+								}
 							}else{
 								//エラーJSON
 								String errMsg = "{\"status\":\"99\", \"reason\":\"not found script(extended)\"}";
