@@ -6,7 +6,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" 
 	id="WebApp_ID" 
 	version="3.0">
-    <display-name>Scriplet 0.9.0 </display-name>
+    <display-name>Scriplet 0.9.1 </display-name>
     <description>
       Scriplet 0.9.5 DEMOs.
     </description>
@@ -54,5 +54,18 @@
     <servlet-mapping>
         <servlet-name>SecureServlet</servlet-name>
         <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>WebSocketScriptlet</servlet-name>
+        <servlet-class>info.dragonlady.scriptlet.WebSocketScriptlet</servlet-class>
+        <init-param>
+          <param-name>debug</param-name>
+          <param-value>0</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WebSocketScriptlet</servlet-name>
+        <url-pattern>/ws/*</url-pattern>
     </servlet-mapping>
 </web-app>

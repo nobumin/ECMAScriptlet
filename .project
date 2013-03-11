@@ -33,4 +33,10 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>TOMCAT_HOME</name>
+			<value>file:/Applications/ServerApplication/apache-tomcat-7.0.37</value>
+		</variable>
+	</variableList>
 </projectDescription>

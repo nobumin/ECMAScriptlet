@@ -1,5 +1,6 @@
 package info.dragonlady.scriptlet;
 
+import info.dragonlady.scriptlet.WebSocketScriptlet.BaseJsonRequest;
 import info.dragonlady.util.DocumentA;
 
 import java.io.BufferedReader;
@@ -228,6 +229,44 @@ public class ESEngine {
 		}
 	}
 
+	private class TextParserWS {
+		protected ESCylinderWS cylinder = null;
+		protected StringWriter writer = null;
+		
+		public TextParserWS(ESCylinderWS cyl, StringWriter w) throws IOException {
+			cylinder = cyl;
+			writer = w;
+		}
+
+		public void parse(String script) throws ESException{
+			int scriptIdx = script.indexOf(serverScriptTag);
+			if(scriptIdx >= 0) {
+				writer.write(script.substring(0, scriptIdx));
+				writer.flush();
+				parse(execScript(script.substring(scriptIdx+serverScriptTag.length())));
+				writer.flush();
+			}
+			if(scriptIdx < 0) {
+				writer.write(script);
+				writer.flush();
+			}
+		}
+
+		protected String execScript(String script) throws ESException{
+			int scriptIdx = script.indexOf(serverScriptEndTag);
+			String scriptValue = removeStartLF(script.substring(0, scriptIdx));
+			cylinder.process(scriptValue, getScriptletDirPath());
+			return script.substring(scriptIdx+serverScriptEndTag.length());
+		}
+
+		private String removeStartLF(String value) {
+			if(value.startsWith("\n")) {
+				return value.substring(1);
+			}
+			return value;
+		}
+	}
+
 	//サーバサイドスクリプトを格納するバッファ
 	private static HashMap<String, String> scriptsMap = new HashMap<String, String>();
 	private static HashMap<String, Long> scriptsLastModify = new HashMap<String, Long>();
@@ -259,6 +298,10 @@ public class ESEngine {
 	 */
 	protected final TextParser createTextParser(ESCylinder cylinder) throws IOException{
 		return new TextParser(cylinder, bufferWriter);
+	}
+
+	protected final TextParserWS createTextWSParser(ESCylinderWS cylinder) throws IOException{
+		return new TextParserWS(cylinder, bufferWriter);
 	}
 
 	/**
@@ -386,6 +429,27 @@ public class ESEngine {
 		return String.format(prop.getProperty("onloadTemplate"), fileName, functionName);
 	}
 	
+	/**
+	 * BodyタグのOnLoadイベント用のスクリプトテンプレートを生成する関数
+	 * @param scriptlet
+	 * @param fileName
+	 * @param functionName
+	 * @return
+	 * @throws InvalidPropertiesFormatException
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	protected static String createOnLoadScript(WSScriptlet scriptlet, String fileName, String functionName) throws InvalidPropertiesFormatException, FileNotFoundException, IOException {
+		String realPath = scriptlet.getServletContext().getRealPath("/");
+		if(!realPath.endsWith("/")) { //for Jetty
+			realPath += "/";
+		}
+		String paramPath = realPath+"WEB-INF"+File.separator+"config.xml";
+		Properties prop = new Properties();   
+		prop.loadFromXML(new FileInputStream(paramPath));
+		return String.format(prop.getProperty("onloadTemplate"), fileName, functionName);
+	}
+
 	/**
 	 * スクリプトレットの文字コードを応答する
 	 * デフォルトはUTF-8
@@ -530,6 +594,55 @@ public class ESEngine {
 		}
 	}
 		
+	/**
+	 * サーバサイドスクリプトを実行する関数<br>
+	 * スクリプトファイル名：サーブレット名<br>
+	 * 例外発生時のスクリプトファイル名：サーブレット名_error<br>
+	 * スクリプトレット名はsitemap.xmlに定義されたclass要素内の値
+	 * @param scriptlet：呼び出し元のスクリプトレット
+	 * @throws ESException
+	 */
+	public static void executeScript(WSScriptlet scriptlet, BaseJsonRequest json, boolean isCallback) throws ESException{
+		ESCylinderWS cylinder = null;
+		ESEngine engine = new ESEngine();
+		try {
+			engine.scriptPath = scriptlet.getScriptletPath();
+			engine.initialize(engine.scriptPath);
+			
+			String path = isCallback ? json.excute : json.path;
+			
+			File scriptFile = new File(engine.scriptPath+path);
+			if(scriptFile.exists()) {
+				if(scriptsLastModify.get(path) == null || scriptsLastModify.get(path) != scriptFile.lastModified()) {
+					scriptsMap.put(path, engine.loadScript(scriptFile));
+					scriptsLastModify.put(path, scriptFile.lastModified());
+				}
+			}else{
+				scriptsMap.remove(path);
+				scriptsLastModify.remove(path);
+				throw new NotFoundException("404 not found");
+			}
+			scriptlet.setCharSet(engine.getContentCharcode());
+			
+			String script = scriptsMap.get(path);
+			cylinder = ESCylinderWS.createInstanse(scriptlet, json, engine.getContentCharcode());
+			TextParserWS textParset = engine.createTextWSParser(cylinder);
+			textParset.parse(script);
+		}
+		catch(NotFoundException e) { //404
+			throw new ESException(new IOException("not found script"));
+		}
+		catch(Exception e) {
+			//エラー処理
+			e.printStackTrace(System.err);
+		}
+		finally{
+			if(cylinder != null) {
+				cylinder.exit();
+			}
+		}
+	}
+	
 	/**
 	 * スクリプトの格納パスを応答する関数
 	 * @return

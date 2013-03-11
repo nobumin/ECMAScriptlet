@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<site version="1.0" class="info.dragonlady.scriptlet.DefaultScriptlet">
+<site version="1.0" class="info.dragonlady.scriptlet.DefaultScriptlet" wsclass="info.dragonlady.scriptlet.DefaultWSScriptlet">
 	<page path="/index.es"/>
 	<page path="/HelloWorldScriptlet.es"/>
 	<page path="/utf8.es"/>
@@ -24,5 +24,8 @@
 	<page path="/DB_INSERT/DBInsertResult.es"/>
 	<page path="/aboutscriptlet.html"/>
 	<page path="/api/apitest.es"/>
+	<page path="/WebSocket.es"/>
+	<page path="/ws/request.es"/>
+	<page path="/ws/event.es"/>
 </site>
 
