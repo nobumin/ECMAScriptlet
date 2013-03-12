@@ -171,7 +171,7 @@ public class WebSocketScriptlet extends WebSocketServlet {
 						//正常
 						//charSetCodeでBaseJsonRequest#responseを文字コード設定?
 						//TODO						
-						if(_baseJson.response.length() > 0) {
+						if(_baseJson.response != null && _baseJson.response.length() > 0) {
 							CharBuffer cbuff = CharBuffer.allocate(_baseJson.response.length());
 							cbuff.position(0);
 							cbuff.put(_baseJson.response);
@@ -210,7 +210,7 @@ public class WebSocketScriptlet extends WebSocketServlet {
 								//正常
 								//charSetCodeでBaseJsonRequest#responseを文字コード設定?
 								//TODO
-								if(_baseJson.response.length() > 0) {
+								if(_baseJson.response != null && _baseJson.response.length() > 0) {
 									CharBuffer cbuff = CharBuffer.allocate(_baseJson.response.length());
 									cbuff.position(0);
 									cbuff.put(_baseJson.response);

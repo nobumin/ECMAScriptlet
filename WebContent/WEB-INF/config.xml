@@ -18,7 +18,7 @@
   -->
 
   <!-- MongoDBオブジェクトを利用するか否かを設定します。 -->
-  <entry key='mongodbject'>false</entry>
+  <entry key='mongodbject'>true</entry>
   <!-- DB設定を任意のパスに設定します。
   <entry key='mongodbconfig'>/Users/Shared/work_folder/DEVELOPPING/ServerEScript/ses/WEB-INF/mongodb.xml</entry>
   -->

@@ -21,8 +21,8 @@
             };
             
             function postToServer(){
-
-            	var sendData = '{"path":"/ws/request.es","query":"test message","response":"","excute":"/ws/event.es"}';
+            	var sid = document.getElementById("sid").value;
+            	var sendData = '{"path":"/ws/request.es","query":"{\'sid\':\''+sid+'\'}","response":"","excute":"/ws/event.es"}';
                 ws.send(sendData);
             }
             
@@ -32,8 +32,10 @@
         </script>
     </head>
     <body>
-        <textarea id="event" readonly style="widht:600px;height:300px;"></textarea><br/>
-        <button type="submit" id="sendButton" onClick="postToServer()">SendText</button>　
-        <button type="submit" id="closeButton" onClick="closeConnect()">Close</button>
+        受信メッセージ:<textarea id="event" readonly style="widht:600px;height:300px;"></textarea><br/><br/>
+        
+        ユニークID:<input type="text" id="sid" style="widht:600px;height:30px;" value=""><br>
+        <button type="submit" id="sendButton" onClick="postToServer()">データ送信</button>　
+        <button type="submit" id="closeButton" onClick="closeConnect()">WebSocket切断</button>
     </body>
 </html>
