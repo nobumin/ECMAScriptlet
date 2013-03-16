@@ -1,6 +1,5 @@
 package info.dragonlady.scriptlet;
 
-import info.dragonlady.scriptlet.WebSocketScriptlet.BaseJsonRequest;
 
 import java.util.Map;
 

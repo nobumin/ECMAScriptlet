@@ -1,6 +1,5 @@
 package info.dragonlady.scriptlet;
 
-import info.dragonlady.scriptlet.WebSocketScriptlet.BaseJsonRequest;
 import info.dragonlady.util.DocumentA;
 
 import java.io.BufferedReader;
@@ -471,6 +470,7 @@ public class ESEngine {
 		ESCylinder cylinder = null;
 		String errorFileName = null;
 		ESEngine engine = new ESEngine();
+		File scriptFile = null;
 		try {
 			engine.scriptPath = scriptlet.getScriptletPath();
 			engine.initialize(engine.scriptPath);
@@ -488,7 +488,7 @@ public class ESEngine {
 			}
 			errorFileName = scriptFileName + errorSufttix;
 			
-			File scriptFile = new File(engine.scriptPath+scriptFileName);
+			scriptFile = new File(engine.scriptPath+scriptFileName);
 			if(scriptFile.exists()) {
 				if(scriptsLastModify.get(scriptFileName) == null || scriptsLastModify.get(scriptFileName) != scriptFile.lastModified()) {
 					scriptsMap.put(scriptFileName, engine.loadScript(scriptFile));
@@ -549,9 +549,15 @@ public class ESEngine {
 			}
 		}
 		catch(NotFoundException e) { //404
+			if(scriptFile != null) {
+				System.out.println(scriptFile.getAbsolutePath());
+			}
 			throw new ESException(new IOException("not found script"));
 		}
 		catch(Exception e) {
+			if(scriptFile != null) {
+				System.out.println(scriptFile.getAbsolutePath());
+			}
 			if(cylinder != null) {
 				try {
 					if(cylinder.getErrorDetail() != null) {
@@ -605,13 +611,13 @@ public class ESEngine {
 	public static void executeScript(WSScriptlet scriptlet, BaseJsonRequest json, boolean isCallback) throws ESException{
 		ESCylinderWS cylinder = null;
 		ESEngine engine = new ESEngine();
+		File scriptFile = null;
 		try {
 			engine.scriptPath = scriptlet.getScriptletPath();
 			engine.initialize(engine.scriptPath);
 			
 			String path = isCallback ? json.excute : json.path;
-			
-			File scriptFile = new File(engine.scriptPath+path);
+			scriptFile = new File(engine.scriptPath+path);
 			if(scriptFile.exists()) {
 				if(scriptsLastModify.get(path) == null || scriptsLastModify.get(path) != scriptFile.lastModified()) {
 					scriptsMap.put(path, engine.loadScript(scriptFile));
@@ -630,10 +636,16 @@ public class ESEngine {
 			textParset.parse(script);
 		}
 		catch(NotFoundException e) { //404
+			if(scriptFile != null) {
+				System.out.println(scriptFile.getAbsolutePath());
+			}
 			throw new ESException(new IOException("not found script"));
 		}
 		catch(Exception e) {
 			//エラー処理
+			if(scriptFile != null) {
+				System.out.println(scriptFile.getAbsolutePath());
+			}
 			e.printStackTrace(System.err);
 		}
 		finally{

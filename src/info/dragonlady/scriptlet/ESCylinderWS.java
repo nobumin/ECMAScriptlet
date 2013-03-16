@@ -1,7 +1,6 @@
 package info.dragonlady.scriptlet;
 
 import info.dragonlady.scriptlet.ESCylinder.ESHelper;
-import info.dragonlady.scriptlet.WebSocketScriptlet.BaseJsonRequest;
 import info.dragonlady.util.DocumentAWS;
 import info.dragonlady.util.Navigator;
 

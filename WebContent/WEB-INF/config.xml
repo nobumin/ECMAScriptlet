@@ -22,6 +22,9 @@
   <!-- DB設定を任意のパスに設定します。
   <entry key='mongodbconfig'>/Users/Shared/work_folder/DEVELOPPING/ServerEScript/ses/WEB-INF/mongodb.xml</entry>
   -->
+  <!-- 非同期バッチスクリプト格納先を任意のフォルダに設定します。 
+  <entry key='batchPath'>/Users/Shared/work_folder/DEVELOPPING/ServerEScript/ses/WEB-INF/scriptlet/batch</entry>
+  -->
 
   <!-- Content-Lengthヘッダを強制的に応答するかを設定します。 
   <entry key='force_content_length'>true</entry>

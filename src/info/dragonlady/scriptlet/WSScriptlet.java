@@ -1,6 +1,5 @@
 package info.dragonlady.scriptlet;
 
-import info.dragonlady.scriptlet.WebSocketScriptlet.BaseJsonRequest;
 import info.dragonlady.util.DBAccesser;
 import info.dragonlady.util.MongoDBAccesser;
 

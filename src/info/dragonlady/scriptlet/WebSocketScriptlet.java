@@ -62,23 +62,6 @@ public class WebSocketScriptlet extends WebSocketServlet {
 	private static ScheduledFuture<?> timeHandle = null;
 
 	private Vector<ScriptletServerInbound> _inboundList = new Vector<ScriptletServerInbound>();
-	public class BaseJsonRequest {
-		public String path;
-		public String query;
-		public String response;
-		public String excute;
-		public String session;
-		
-		public void setResult(String value) {
-			response = new String(value);
-		}
-		public void clearResult() {
-			response = null;
-		}
-		public void setSession(String value) {
-			session = new String(value);
-		}
-	}
 	
 	/**
 	 * 
@@ -313,7 +296,7 @@ public class WebSocketScriptlet extends WebSocketServlet {
 					if(siteNode.hasAttribute("OUT_OF_SERVICE") && siteNode.getAttribute("OUT_OF_SERVICE").length() > 1) {
 						outOfServer = true;
 					}
-					if(siteNode.hasAttribute("class")) {
+					if(siteNode.hasAttribute("wsclass")) {
 						defaultWSScriptClassName = siteNode.getAttribute("wsclass");
 						return;
 					}

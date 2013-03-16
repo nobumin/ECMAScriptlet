@@ -43,6 +43,9 @@
 	<welcome-file-list>
 		<welcome-file>index</welcome-file>
 	</welcome-file-list>
+	<listener>
+		<listener-class>info.dragonlady.listener.TimerLaunchListener</listener-class>
+	</listener>
     <servlet>
         <servlet-name>SecureServlet</servlet-name>
         <servlet-class>info.dragonlady.scriptlet.SecureServlet</servlet-class>
