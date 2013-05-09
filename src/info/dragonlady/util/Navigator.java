@@ -19,10 +19,10 @@ public class Navigator {
 		userAgent = scriptlet.getRequest().getHeader("User-Agent");
 		referer = scriptlet.getRequest().getHeader("referer");
 		remoteAddr = scriptlet.getRequest().getRemoteAddr();
-		if(userAgent.toLowerCase().matches(".*kddi.+up.browser.+")) {
+		if(userAgent != null && userAgent.toLowerCase().matches(".*kddi.+up.browser.+")) {
 			termID = scriptlet.getRequest().getHeader("X-Up-Subno");
 		}else
-		if(userAgent.toLowerCase().matches(".+docomo.+")) { //?guid=ON
+		if(userAgent != null && userAgent.toLowerCase().matches(".+docomo.+")) { //?guid=ON
 			termID = scriptlet.getRequest().getHeader("X-DCMGUID");
 		}
 	}

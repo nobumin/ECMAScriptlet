@@ -29,7 +29,8 @@ import com.mongodb.MongoException;
  */
 public class MongoDBAccesser {
 	private Properties properties = null;
-	private DB mongodb = null;
+	private final ThreadLocal<DB> tlDB =  new ThreadLocal<DB>();
+//	private DB mongodb = null;
 	
 	/**
 	 * 
@@ -70,6 +71,13 @@ public class MongoDBAccesser {
 	private void initialize() throws UnknownHostException, MongoException, UtilException {
 		if(properties != null) {
 			Mongo m = null;
+			DB mongodb  = tlDB.get();
+			
+			if(mongodb != null) {
+				mongodb.getMongo().close();
+				tlDB.remove();
+				tlDB.set(null);
+			}
 			
 			if(properties.getProperty("host") != null && properties.getProperty("db") != null) {
 				int port = -1;
@@ -92,6 +100,7 @@ public class MongoDBAccesser {
 						throw new UtilException("MongoDB Authentication error");
 					}
 				}
+				tlDB.set(mongodb);
 			}else{
 				throw new UtilException("MongoDB host or db not found.");
 			}
@@ -114,9 +123,11 @@ public class MongoDBAccesser {
 	 * 
 	 */
 	public void close() {
+		DB mongodb  = tlDB.get();
 		if(mongodb != null) {
 			mongodb.getMongo().close();
-			mongodb = null;
+			tlDB.remove();
+			tlDB.set(null);
 		}
 	}
 	
@@ -125,6 +136,7 @@ public class MongoDBAccesser {
 	 * @return
 	 */
 	public Mongo getMongo() {
+		DB mongodb  = tlDB.get();
 		if(mongodb != null) {
 			return mongodb.getMongo();
 		}
@@ -138,6 +150,7 @@ public class MongoDBAccesser {
 	 * @throws UtilException 
 	 */
 	public DBCollection getCollection(String name) throws UtilException {
+		DB mongodb  = tlDB.get();
 		if(mongodb != null) {
 			Set<String> collections = mongodb.getCollectionNames();
 			for(String collection : collections) {
@@ -152,6 +165,7 @@ public class MongoDBAccesser {
 	}
 	
 	public DBCollection createCollection(String name) {
+		DB mongodb  = tlDB.get();
 		return mongodb.getCollection(name);
 	}
 	
