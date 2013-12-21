@@ -3,9 +3,8 @@
 <properties version='1.0'>
   <entry key='host'>127.0.0.1</entry>
   <entry key='port'>27017</entry>
-  <entry key='db'>ncast</entry>
-  <!--
   <entry key='db'>testdb</entry>
+  <!--
   <entry key='userid'>master</entry>
   <entry key='password'>master</entry>
   -->

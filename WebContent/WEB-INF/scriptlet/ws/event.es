@@ -5,33 +5,40 @@ if(jsonReq.session && jsonReq.session.length() > 0) {
 	var now = new Date();
 
 	mongodb.open();
-	var notificationCol = mongodb.getCollection("notification_col");
-	var queryNode = mongodb.createDBQuery();
-	queryNode.put("sid", sessionObj.sid);
-	var dateYYYYMMDDHHMI = now.getFullYear() + ("00"+(now.getMonth()+1)).slice(-2) + ("00"+now.getDate()).slice(-2) + ("00"+now.getHours()).slice(-2) + ("00"+now.getMinutes()).slice(-2);
-	queryNode.put("etime", dateYYYYMMDDHHMI);
-	var cur = notificationCol.find(queryNode);
+	try {
+		var chatMessageCol = mongodb.getCollection("chat_message_col");
+//		var queryNode = mongodb.createDBQuery();
+//		queryNode.put("sid", sessionObj.sid);
 
-	var resultMessage = null;
-	while(cur.hasNext()) {
-		var evetData = JSON.parse(cur.next());
-		if(resultMessage != null) {
-			resultMessage += ",";
-			resultMessage += evetData.message;
-		}else{
-			resultMessage = evetData.message;
+		var sortObject = mongodb.createDBObject();
+		sortObject.put('regist_ts',-1);
+		var cur = chatMessageCol.find().sort(sortObject);
+
+		var resultMessages = null;
+		var count = 0;
+		while(cur.hasNext() && count < 10) { //10件まで
+			count++;
+			var evetData = JSON.parse(cur.next());
+			if(resultMessages != null) {
+				resultMessages += ",";
+				resultMessages += evetData.comment;
+			}else{
+				resultMessages = evetData.comment;
+			}
 		}
+		if(resultMessages != null) {
+			jsonReq.setResult('{"message":"'+resultMessages+'"}');
+		}
+		
+//		var removeNode = mongodb.createDBQuery();
+//		removeNode.put("sid", sessionObj.sid);
+//		var removeCondition = mongodb.createDBQuery();
+//		removeCondition.put("$lte", dateYYYYMMDDHHMI);
+//		removeNode.put("etime", removeCondition);
+//		notificationCol.remove(removeNode);
+	} catch(e) {
+		sysout.println(e);
 	}
-	if(resultMessage != null) {
-		jsonReq.setResult('{"message":"'+resultMessage+'"}');
-	}
-	
-	var removeNode = mongodb.createDBQuery();
-	removeNode.put("sid", sessionObj.sid);
-	var removeCondition = mongodb.createDBQuery();
-	removeCondition.put("$lte", dateYYYYMMDDHHMI);
-	removeNode.put("etime", removeCondition);
-	notificationCol.remove(removeNode);
 	
 	mongodb.close();
 }
