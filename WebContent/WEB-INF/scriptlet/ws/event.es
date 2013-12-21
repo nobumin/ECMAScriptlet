@@ -21,9 +21,13 @@ if(jsonReq.session && jsonReq.session.length() > 0) {
 			var evetData = JSON.parse(cur.next());
 			if(resultMessages != null) {
 				resultMessages += ",";
+				resultMessages += evetData.sid;
+				resultMessages += ":";
 				resultMessages += evetData.comment;
 			}else{
-				resultMessages = evetData.comment;
+				resultMessages = evetData.sid;
+				resultMessages += ":";
+				resultMessages += evetData.comment;
 			}
 		}
 		if(resultMessages != null) {

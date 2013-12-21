@@ -19,11 +19,13 @@ try {
 
 	var newMessage = mongodb.createDBObject();
 	if(queryObj.msg != null && queryObj.msg.length > 0) {
+		newMessage.put('sid',queryObj.sid);
 		newMessage.put('comment',queryObj.msg);
 		newMessage.put('regist_ts',now.getTime());
 		chatMessageCol.insert(newMessage);
 	}else if(queryObj.hello != null && queryObj.hello.length > 0) {
-		newMessage.put('comment',queryObj.hello+" is connect");
+		newMessage.put('sid',queryObj.sid);
+		newMessage.put('comment',"connect now");
 		newMessage.put('regist_ts',now.getTime());
 		chatMessageCol.insert(newMessage);
 	}
