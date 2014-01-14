@@ -11,6 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.Scriptable;
+
 /**
  * 独自の処理を行い、サーバサイドスクリプトを実行する際の基底クラスです。
  * @author nobu
@@ -186,6 +190,20 @@ abstract public class Scriptlet implements Serializable {
 	 */
 	public void log(String message, Throwable t) {
 		secServlet.log(message, t);
+	}
+	
+	/**
+	 * JavaScriptの無名関数を処理するためのヘルパーメソッド
+	 * @param function:引数に指定された関数を指定
+	 * @param args:無名関数へ渡す引数の配列
+	 * @return
+	 */
+	public Object execAnonymousFunction(Object function, Object[] args) {
+		ContextFactory cxFactory = new ContextFactory();
+		Context cx = cxFactory.enterContext();
+		Scriptable scope = cx.initStandardObjects();
+		org.mozilla.javascript.NativeFunction anonymousFunc = (org.mozilla.javascript.NativeFunction)function;
+		return anonymousFunc.call(cx, scope, anonymousFunc, args);
 	}
 	
 	/**
