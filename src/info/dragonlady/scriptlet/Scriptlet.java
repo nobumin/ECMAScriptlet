@@ -5,6 +5,7 @@ import info.dragonlady.util.MongoDBAccesser;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -198,12 +199,12 @@ abstract public class Scriptlet implements Serializable {
 	 * @param args:無名関数へ渡す引数の配列
 	 * @return
 	 */
-	public Object execAnonymousFunction(Object function, Object[] args) {
+	public Object execAnonymousFunction(Object function, Vector<String> args) {
 		ContextFactory cxFactory = new ContextFactory();
 		Context cx = cxFactory.enterContext();
 		Scriptable scope = cx.initStandardObjects();
-		org.mozilla.javascript.NativeFunction anonymousFunc = (org.mozilla.javascript.NativeFunction)function;
-		return anonymousFunc.call(cx, scope, anonymousFunc, args);
+		org.mozilla.javascript.BaseFunction anonymousFunc = (org.mozilla.javascript.BaseFunction)function;
+		return anonymousFunc.call(cx, scope, anonymousFunc, args.toArray());
 	}
 	
 	/**
