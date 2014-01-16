@@ -199,7 +199,7 @@ abstract public class Scriptlet implements Serializable {
 	 * @param args:無名関数へ渡す引数の配列
 	 * @return
 	 */
-	public Object execAnonymousFunction(Object function, Vector<String> args) {
+	public Object execAnonymousFunction(Object function, Vector<Object> args) {
 		ContextFactory cxFactory = new ContextFactory();
 		Context cx = cxFactory.enterContext();
 		Scriptable scope = cx.initStandardObjects();
