@@ -1,20 +1,14 @@
 package info.dragonlady.scriptlet;
 
-import info.dragonlady.scriptlet.ESCylinder.ESHelper;
 import info.dragonlady.util.DocumentAWS;
-import info.dragonlady.util.Navigator;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;

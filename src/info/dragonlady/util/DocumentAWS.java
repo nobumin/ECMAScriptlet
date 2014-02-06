@@ -1,7 +1,5 @@
 package info.dragonlady.util;
 
-import javax.servlet.http.Cookie;
-
 import info.dragonlady.scriptlet.WSScriptlet;
 
 import org.w3c.dom.Attr;

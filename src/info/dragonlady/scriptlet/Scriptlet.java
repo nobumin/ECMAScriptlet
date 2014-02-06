@@ -2,8 +2,12 @@ package info.dragonlady.scriptlet;
 
 import info.dragonlady.util.DBAccesser;
 import info.dragonlady.util.MongoDBAccesser;
+import info.dragonlady.util.UtilException;
+import info.dragonlady.util.DBAccesser.DBStatementParam;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
@@ -15,6 +19,14 @@ import javax.servlet.http.HttpSession;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Scriptable;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 /**
  * 独自の処理を行い、サーバサイドスクリプトを実行する際の基底クラスです。
@@ -30,6 +42,215 @@ abstract public class Scriptlet implements Serializable {
 	public static final String DEFAULT_CHARSET = "utf-8";
 	public static final String DEFAULT_CONTENT_TYPE = "text/html";
 
+
+	/**
+	 * SQLラッピングクラス
+	 * @author nobu
+	 *
+	 */
+	public class SQLiteCall
+	{
+		private DBStatementParam[] createStatementParam(DBAccesser dba, String[] jsonList) throws JSONException {
+			DBStatementParam[] params = null;
+			if(jsonList != null && jsonList.length > 0) {
+				params = new DBStatementParam[jsonList.length];
+				for(int i=0;i<jsonList.length;i++) {
+					String jsonParam = jsonList[i];
+					JSONObject param = new JSONObject(jsonParam);
+					String type = param.getString("type");
+					String value = param.getString("value");
+					if(type.toUpperCase().equals("INT")) {
+						params[i] = dba.createIntDBParam(Integer.parseInt(value));
+					}else if(type.toUpperCase().equals("STRING")) {
+						params[i] = dba.createStringDBParam(value);
+					}else if(type.toUpperCase().equals("BOOL")) {
+						params[i] = dba.createBooleanDBParam(Boolean.parseBoolean(value));
+					}else if(type.toUpperCase().equals("LONG")) {
+						params[i] = dba.createLongDBParam(Long.parseLong(value));
+					}else if(type.toUpperCase().equals("FLOAT")) {
+						params[i] = dba.createFloatDBParam(Float.parseFloat(value));
+					}else if(type.toUpperCase().equals("DOUBLE")) {
+						params[i] = dba.createDoubleDBParam(Double.parseDouble(value));
+					}else if(type.toUpperCase().equals("DATE")) {
+						params[i] = dba.createDateDBParam(value);
+					}else if(type.toUpperCase().equals("TIMESTAMP")) {
+						params[i] = dba.createTimestampDBParam(value);
+					}else{
+						params[i] = dba.createStringDBParam(value);
+					}
+				}
+			}
+			return params;
+		}
+		/**
+		 * 
+		 * @param dba
+		 * @param sqlName
+		 * @param jsonList
+		 * @return
+		 * @throws UtilException
+		 */
+		public String execSelectSQL(DBAccesser dba, String sqlName, String[] jsonList) throws UtilException {
+			JSONArray jarray = new JSONArray();
+			Connection con = null;
+			try {
+				DBStatementParam[] params = createStatementParam(dba, jsonList);
+				con = dba.getConnection();
+				Vector<HashMap<String, Object>>resultSet = dba.selectQuery(sqlName, con, params);
+				for(HashMap<String, Object> record : resultSet) {
+					JSONObject json = new JSONObject();
+					for(Map.Entry<String, Object>entry : record.entrySet()) {
+						String key = entry.getKey();
+						Object val = entry.getValue();
+						json.put(key, val);
+					}
+					jarray.put(json);
+				}
+			}
+			catch(UtilException e) {
+				throw e;
+			}
+			catch(Exception e) {
+				throw new UtilException(e);
+			}
+			finally {
+				if(con != null) {
+					try {
+						con.close();
+					}
+					catch(Exception e) {
+						//NOP
+					}
+				}
+			}
+			
+			return jarray.toString();
+		}
+		/**
+		 * 
+		 * @param dba
+		 * @param sqlName
+		 * @param jsonList
+		 * @return
+		 * @throws UtilException
+		 */
+		public boolean execUpdateSQL(DBAccesser dba, String sqlName, String[] jsonList) throws UtilException {
+			Connection con = null;
+			boolean result = false;
+			try {
+				DBStatementParam[] params = createStatementParam(dba, jsonList);
+				con = dba.getConnection();
+				int count = dba.updateQuery(sqlName, con, params);
+				if(count >= 0) {
+					result = true;
+				}
+			}
+			catch(UtilException e) {
+				throw e;
+			}
+			catch(Exception e) {
+				throw new UtilException(e);
+			}
+			finally {
+				if(con != null) {
+					try {
+						con.close();
+					}
+					catch(Exception e) {
+						//NOP
+					}
+				}
+			}
+			return result;
+		}
+	}
+	
+	/**
+	 * mongoDBアクセス ラッピングクラス
+	 * @author nobu
+	 *
+	 */
+	public class MongoDBCall {
+		/**
+		 * 
+		 * @param mongodb
+		 * @param colectionName
+		 * @param queryJson
+		 * @return
+		 * @throws UtilException
+		 */
+		public String findDB(MongoDBAccesser mongodb, String colectionName, String queryJson) throws UtilException {
+			StringBuffer result = new StringBuffer();
+			result.append("[");
+			try {
+				mongodb.open();
+				DBCollection collection = mongodb.getCollection(colectionName);
+				DBObject findObj = (DBObject)JSON.parse(queryJson);
+				DBCursor cursor = collection.find(findObj);
+				while(cursor.hasNext()) {
+					if(result.length() > 1) {
+						result.append(",");
+					}
+					result.append(cursor.next().toString());
+				}
+			}
+			catch(Exception e) {
+				throw new UtilException(e);
+			}
+			finally {
+				mongodb.close();
+			}
+			result.append("]");
+			return result.toString();
+		}
+		
+		/**
+		 * 
+		 * @param mongodb
+		 * @param colectionName
+		 * @param insertJson
+		 * @throws UtilException
+		 */
+		public void insertDB(MongoDBAccesser mongodb, String colectionName, String insertJson) throws UtilException {
+			try {
+				mongodb.open();
+				DBCollection collection = mongodb.getCollection(colectionName);
+				DBObject insertObj = (DBObject)JSON.parse(insertJson);
+				collection.insert(insertObj);
+			}
+			catch(Exception e) {
+				throw new UtilException(e);
+			}
+			finally {
+				mongodb.close();
+			}
+		}
+
+		/**
+		 * 
+		 * @param mongodb
+		 * @param colectionName
+		 * @param queryJson
+		 * @param updateJson
+		 * @throws UtilException
+		 */
+		public void updateDB(MongoDBAccesser mongodb, String colectionName, String queryJson, String updateJson) throws UtilException {
+			try {
+				mongodb.open();
+				DBCollection collection = mongodb.getCollection(colectionName);
+				DBObject findObj = (DBObject)JSON.parse(queryJson);
+				DBObject updateObj = (DBObject)JSON.parse(updateJson);
+				collection.update(findObj, updateObj);
+			}
+			catch(Exception e) {
+				throw new UtilException(e);
+			}
+			finally {
+				mongodb.close();
+			}
+		}
+	}
+	
 	protected SecureServlet secServlet = null;
 	protected HttpServletRequest request = null;
 	protected HttpServletResponse response = null;
@@ -121,6 +342,22 @@ abstract public class Scriptlet implements Serializable {
 	 */
 	public String getCommonErrorScript() {
 		return secServlet.getCommonErrorScript();
+	}
+	
+	/**
+	 * SQLへのアクセスをJSONで行うためのクラス
+	 * @return
+	 */
+	public SQLiteCall getSqlDbWithJSon() {
+		return new SQLiteCall();
+	}
+	
+	/**
+	 * MongoDBへのアクセスをJSONで行うためのクラス
+	 * @return
+	 */
+	public MongoDBCall getMongoDbWithJSon() {
+		return new MongoDBCall();
 	}
 
 	/**

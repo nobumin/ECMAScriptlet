@@ -80,7 +80,8 @@ public class SecureServlet extends HttpServlet {
 					sitemapFileModify = sitemapXMLFile.lastModified();
 					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 					DocumentBuilder builder = factory.newDocumentBuilder();
-					sitemapXML = builder.parse(sitemapXMLPath);
+//					sitemapXML = builder.parse(sitemapXMLPath);
+					sitemapXML = builder.parse(sitemapXMLFile); //2014.02.06 sitemapXMLPathだと、Parallel deploymentでパースエラー
 				}
 			}else{
 				File sitemapXMLFile = new File(sitemapXMLPath);
@@ -88,7 +89,8 @@ public class SecureServlet extends HttpServlet {
 					sitemapFileModify = sitemapXMLFile.lastModified();
 					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 					DocumentBuilder builder = factory.newDocumentBuilder();
-					sitemapXML = builder.parse(sitemapXMLPath);
+//					sitemapXML = builder.parse(sitemapXMLPath);
+					sitemapXML = builder.parse(sitemapXMLFile); //2014.02.06 sitemapXMLPathだと、Parallel deploymentでパースエラー
 				}
 			}
 			if(sitemapXML == null) {

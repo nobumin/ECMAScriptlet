@@ -1,6 +1,8 @@
 package info.dragonlady.scriptlet;
 
+import info.dragonlady.util.DBAccesser;
 import info.dragonlady.util.DocumentA;
+import info.dragonlady.util.SmtpParser;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -13,6 +15,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -647,6 +650,36 @@ public class ESEngine {
 				System.out.println(scriptFile.getAbsolutePath());
 			}
 			e.printStackTrace(System.err);
+		}
+		finally{
+			if(cylinder != null) {
+				cylinder.exit();
+			}
+		}
+	}
+	
+	/**
+	 * サーバサイドスクリプトを実行する関数<br>
+	 * メールボディにScriptを記述する。
+	 * @param mail
+	 * @param jsObjectMap
+	 * @param dba
+	 * @throws ESException
+	 */
+	public static void executeScript(SmtpParser mail, Map<String, Object> jsObjectMap, DBAccesser dba, Scriptlet scriptlet) throws ESException{
+		ESCylinder cylinder = null;
+		ESEngine engine = new ESEngine();
+		
+		try {
+			cylinder = ESCylinder.createInstanse(mail, engine.bufferWriter, jsObjectMap, dba, scriptlet);
+			TextParser TextParser = engine.createTextParser(cylinder);
+			TextParser.parse(mail.getBody());
+			engine.bufferWriter.flush();
+			engine.bufferWriter.close();
+			mail.setBody(engine.bufferWriter.toString());
+		}
+		catch(Exception e) {
+			e.printStackTrace(System.out);
 		}
 		finally{
 			if(cylinder != null) {

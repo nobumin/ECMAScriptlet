@@ -3,6 +3,7 @@ package info.dragonlady.scriptlet;
 import info.dragonlady.util.DBAccesser;
 import info.dragonlady.util.DocumentA;
 import info.dragonlady.util.Navigator;
+import info.dragonlady.util.SmtpParser;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -301,7 +302,49 @@ public class ESCylinder{
 		ScriptableObject.putProperty(cylinder.scriptable, "dbaccesser", jsDBAccesser);
 		Object jsMongoAccesser = Context.javaToJS(cylinder.scriptlet.getMongoDBAccesser(), cylinder.scriptable);
 		ScriptableObject.putProperty(cylinder.scriptable, "mongodb", jsMongoAccesser);
+		Object jsMongoJSon = Context.javaToJS(cylinder.scriptlet.getMongoDbWithJSon(), cylinder.scriptable);
+		ScriptableObject.putProperty(cylinder.scriptable, "mongodbjson", jsMongoJSon);
+		Object jsSQLJSon = Context.javaToJS(cylinder.scriptlet.getSqlDbWithJSon(), cylinder.scriptable);
+		ScriptableObject.putProperty(cylinder.scriptable, "sqldbjson", jsSQLJSon);
 		
+		return cylinder;
+	}
+
+	/**
+	 * Javascript on mail用のシリンダを生成します。
+	 * @param mail
+	 * @param writer
+	 * @param jsObjectMap
+	 * @return
+	 * @throws IOException
+	 */
+	public static ESCylinder createInstanse(SmtpParser mail, Writer writer, Map<String, Object> jsObjectMap, DBAccesser dba, Scriptlet scriptlet) throws IOException{
+		ESCylinder cylinder = new ESCylinder(scriptlet);
+		//Rhinoの開始宣言
+		ContextFactory cxFactory = new ContextFactory();
+		cylinder.cx = cxFactory.enterContext();
+		//ECMAScriptエンジンの初期化
+		cylinder.scriptable = cylinder.cx.initStandardObjects();
+		//グローバルオブジェクトの追加
+		if(jsObjectMap != null && !jsObjectMap.isEmpty()) {
+			Iterator<String> i = jsObjectMap.keySet().iterator();
+			while(i.hasNext()) {
+				String key = i.next();
+				Object value = jsObjectMap.get(key);
+				Object jsObject = Context.javaToJS(value, cylinder.scriptable);
+				ScriptableObject.putProperty(cylinder.scriptable, key, jsObject);
+			}
+		}
+		Object jsWriter = Context.javaToJS(writer, cylinder.scriptable);
+		ScriptableObject.putProperty(cylinder.scriptable, "serverout", jsWriter);
+		Object jsMailbody = Context.javaToJS(mail, cylinder.scriptable);
+		ScriptableObject.putProperty(cylinder.scriptable, "mailbody", jsMailbody);
+		Object jsOut = Context.javaToJS(System.out, cylinder.scriptable);
+		ScriptableObject.putProperty(cylinder.scriptable, "sysout", jsOut);
+		Object jsErr = Context.javaToJS(System.err, cylinder.scriptable);
+		ScriptableObject.putProperty(cylinder.scriptable, "syserr", jsErr);
+		Object jsDBAccesser = Context.javaToJS(dba, cylinder.scriptable);
+		ScriptableObject.putProperty(cylinder.scriptable, "dbaccesser", jsDBAccesser);
 		return cylinder;
 	}
 

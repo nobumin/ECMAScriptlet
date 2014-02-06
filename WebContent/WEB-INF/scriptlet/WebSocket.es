@@ -34,7 +34,7 @@
             function openConnect(){
             	closeConnect();
             	//var ws = new WebSocket("ws://"+ip+":8080/ecmascriptlet/ws/WebSocketScriptlet");
-            	ws = new WebSocket("ws://"+host+"/ecmascriptlet/ws/WebSocketScriptlet");
+            	ws = new WebSocket("ws://"+host+"/ecmascriptlet/ws/WebSocketScriptlet.es");
                 ws.onopen = function(){
                 	console.log(new Date() + " onopen");
                 	wsSetup();

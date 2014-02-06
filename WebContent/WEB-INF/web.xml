@@ -60,7 +60,7 @@
     </servlet-mapping>
     
     <servlet>
-        <servlet-name>WebSocketScriptlet</servlet-name>
+        <servlet-name>WebSocketScriptlet.es</servlet-name>
         <servlet-class>info.dragonlady.scriptlet.WebSocketScriptlet</servlet-class>
         <init-param>
           <param-name>debug</param-name>
@@ -68,7 +68,7 @@
         </init-param>
     </servlet>
     <servlet-mapping>
-        <servlet-name>WebSocketScriptlet</servlet-name>
+        <servlet-name>WebSocketScriptlet.es</servlet-name>
         <url-pattern>/ws/*</url-pattern>
     </servlet-mapping>
 	<session-config>
