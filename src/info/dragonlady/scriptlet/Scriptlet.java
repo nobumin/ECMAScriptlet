@@ -142,6 +142,7 @@ abstract public class Scriptlet implements Serializable {
 				con = dba.getConnection();
 				int count = dba.updateQuery(sqlName, con, params);
 				if(count >= 0) {
+					con.commit();
 					result = true;
 				}
 			}
@@ -154,6 +155,14 @@ abstract public class Scriptlet implements Serializable {
 			finally {
 				if(con != null) {
 					try {
+						if(!result) {
+							try {
+								con.rollback();
+							}
+							catch(Exception e) {
+								//
+							}
+						}
 						con.close();
 					}
 					catch(Exception e) {
