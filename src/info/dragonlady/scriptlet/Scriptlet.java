@@ -172,6 +172,55 @@ abstract public class Scriptlet implements Serializable {
 			}
 			return result;
 		}
+		/**
+		 * 
+		 * @param dba
+		 * @param con
+		 * @param sqlName
+		 * @param jsonList
+		 * @return
+		 * @throws UtilException
+		 */
+		public Connection execUpdateSQL(DBAccesser dba, Connection con, String sqlName, String[] jsonList) throws UtilException {
+			Connection conn = null;
+			boolean result = false;
+			try {
+				if(con == null) {
+					conn = dba.getConnection();
+				}
+				DBStatementParam[] params = createStatementParam(dba, jsonList);
+				conn = dba.getConnection();
+				int count = dba.updateQuery(sqlName, conn, params);
+				if(count >= 0) {
+					result = true;
+				}
+			}
+			catch(UtilException e) {
+				throw e;
+			}
+			catch(Exception e) {
+				throw new UtilException(e);
+			}
+			finally {
+				if(conn != null) {
+					try {
+						if(!result) {
+							try {
+								conn.rollback();
+							}
+							catch(Exception e) {
+								//
+							}
+						}
+						conn.close();
+					}
+					catch(Exception e) {
+						//NOP
+					}
+				}
+			}
+			return conn;
+		}
 	}
 	
 	/**
