@@ -103,31 +103,33 @@ public class TimerLaunchListener extends WSScriptlet implements ServletContextLi
 			try {
 				String batchDir = getScriptletPath();
 				File baseDir = new File(batchDir);
-				File scripts[] = baseDir.listFiles(new FileAcceptFilter());
-				Vector<String> paths = new Vector<String>();
-				for(int i=0;i<scripts.length;i++) {
-					if(!jsonMap.containsKey(scripts[i].getName())) {
-						BaseJsonRequest baseJson = new BaseJsonRequest();
-						baseJson.path = "";
-						baseJson.excute = File.separator+scripts[i].getName();
-						baseJson.response = "";
-						baseJson.query = "";
-						baseJson.session = null;
-						jsonMap.put(scripts[i].getName(), baseJson);
+				if(baseDir.exists() && baseDir.isDirectory()) {
+					File scripts[] = baseDir.listFiles(new FileAcceptFilter());
+					Vector<String> paths = new Vector<String>();
+					for(int i=0;i<scripts.length;i++) {
+						if(!jsonMap.containsKey(scripts[i].getName())) {
+							BaseJsonRequest baseJson = new BaseJsonRequest();
+							baseJson.path = "";
+							baseJson.excute = File.separator+scripts[i].getName();
+							baseJson.response = "";
+							baseJson.query = "";
+							baseJson.session = null;
+							jsonMap.put(scripts[i].getName(), baseJson);
+						}
+						paths.add(scripts[i].getName());
+						try {
+							ESEngine.executeScript(scriptlet, jsonMap.get(scripts[i].getName()), true);
+						}
+						catch(Exception e) {
+							e.printStackTrace(System.err);
+						}
 					}
-					paths.add(scripts[i].getName());
-					try {
-						ESEngine.executeScript(scriptlet, jsonMap.get(scripts[i].getName()), true);
-					}
-					catch(Exception e) {
-						e.printStackTrace(System.err);
-					}
-				}
-				Iterator<String> it = jsonMap.keySet().iterator();
-				while(it.hasNext()) {
-					String key = it.next();
-					if(!paths.contains(key)) {
-						jsonMap.remove(key);
+					Iterator<String> it = jsonMap.keySet().iterator();
+					while(it.hasNext()) {
+						String key = it.next();
+						if(!paths.contains(key)) {
+							jsonMap.remove(key);
+						}
 					}
 				}
 			}
