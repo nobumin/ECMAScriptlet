@@ -96,6 +96,7 @@ abstract public class Scriptlet implements Serializable {
 			try {
 				DBStatementParam[] params = createStatementParam(dba, jsonList);
 				con = dba.getConnection();
+				con.setAutoCommit(false);
 				Vector<HashMap<String, Object>>resultSet = dba.selectQuery(sqlName, con, params);
 				for(HashMap<String, Object> record : resultSet) {
 					JSONObject json = new JSONObject();
@@ -140,6 +141,7 @@ abstract public class Scriptlet implements Serializable {
 			try {
 				DBStatementParam[] params = createStatementParam(dba, jsonList);
 				con = dba.getConnection();
+				con.setAutoCommit(false);
 				int count = dba.updateQuery(sqlName, con, params);
 				if(count >= 0) {
 					con.commit();
