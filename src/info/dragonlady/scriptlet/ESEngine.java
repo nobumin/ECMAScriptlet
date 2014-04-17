@@ -20,6 +20,8 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletContext;
+import javax.websocket.Session;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -609,17 +611,18 @@ public class ESEngine {
 	 * 例外発生時のスクリプトファイル名：サーブレット名_error<br>
 	 * スクリプトレット名はsitemap.xmlに定義されたclass要素内の値
 	 * @param scriptlet：呼び出し元のスクリプトレット
+	 * @param session:Websocketセッション
+	 * @param wsStatus：呼出タイミング
 	 * @throws ESException
 	 */
-	public static void executeScript(WSScriptlet scriptlet, BaseJsonRequest json, boolean isCallback) throws ESException{
+	public static void executeScript(WSScriptlet scriptlet, String path, Session session, WSScriptlet.WS_STATUS wsStatus) throws ESException{
 		ESCylinderWS cylinder = null;
 		ESEngine engine = new ESEngine();
 		File scriptFile = null;
 		try {
-			engine.scriptPath = scriptlet.getScriptletPath();
+			engine.scriptPath = scriptlet.getScriptletPath(session);
 			engine.initialize(engine.scriptPath);
 			
-			String path = isCallback ? json.excute : json.path;
 			scriptFile = new File(engine.scriptPath+path);
 			if(scriptFile.exists()) {
 				if(scriptsLastModify.get(path) == null || scriptsLastModify.get(path) != scriptFile.lastModified()) {
@@ -634,7 +637,61 @@ public class ESEngine {
 			scriptlet.setCharSet(engine.getContentCharcode());
 			
 			String script = scriptsMap.get(path);
-			cylinder = ESCylinderWS.createInstanse(scriptlet, json, engine.getContentCharcode());
+			cylinder = ESCylinderWS.createInstanse(scriptlet, session, wsStatus, engine.getContentCharcode());
+			TextParserWS textParset = engine.createTextWSParser(cylinder);
+			textParset.parse(script);
+		}
+		catch(NotFoundException e) { //404
+			if(scriptFile != null) {
+				System.out.println(scriptFile.getAbsolutePath());
+			}
+			throw new ESException(new IOException("not found script"));
+		}
+		catch(Exception e) {
+			//エラー処理
+			if(scriptFile != null) {
+				System.out.println(scriptFile.getAbsolutePath());
+			}
+			e.printStackTrace(System.err);
+		}
+		finally{
+			if(cylinder != null) {
+				cylinder.exit();
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param scriptlet
+	 * @param path
+	 * @param context
+	 * @param wsStatus
+	 * @throws ESException
+	 */
+	public static void executeScript(WSScriptlet scriptlet, String path, ServletContext context, WSScriptlet.WS_STATUS wsStatus) throws ESException{
+		ESCylinderWS cylinder = null;
+		ESEngine engine = new ESEngine();
+		File scriptFile = null;
+		try {
+			engine.scriptPath = scriptlet.getScriptletPath(context);
+			engine.initialize(engine.scriptPath);
+			
+			scriptFile = new File(engine.scriptPath+path);
+			if(scriptFile.exists()) {
+				if(scriptsLastModify.get(path) == null || scriptsLastModify.get(path) != scriptFile.lastModified()) {
+					scriptsMap.put(path, engine.loadScript(scriptFile));
+					scriptsLastModify.put(path, scriptFile.lastModified());
+				}
+			}else{
+				scriptsMap.remove(path);
+				scriptsLastModify.remove(path);
+				throw new NotFoundException("404 not found");
+			}
+			scriptlet.setCharSet(engine.getContentCharcode());
+			
+			String script = scriptsMap.get(path);
+			cylinder = ESCylinderWS.createInstanse(scriptlet, null, wsStatus, engine.getContentCharcode());
 			TextParserWS textParset = engine.createTextWSParser(cylinder);
 			textParset.parse(script);
 		}

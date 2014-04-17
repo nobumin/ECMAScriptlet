@@ -1,16 +1,24 @@
 package info.dragonlady.scriptlet;
 
+import info.dragonlady.scriptlet.Scriptlet.MongoDBCall;
+import info.dragonlady.scriptlet.Scriptlet.SQLiteCall;
 import info.dragonlady.util.DBAccesser;
 import info.dragonlady.util.MongoDBAccesser;
+import info.dragonlady.websocket.WebsocketServer;
 
 import java.io.Serializable;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
-
+import javax.websocket.Session;
 
 public abstract class WSScriptlet implements Serializable {
-
+	public enum WS_STATUS {
+		OPEN,
+		CLOSE,
+		ERROR,
+		EXEC,
+	}
 	/**
 	 * 
 	 */
@@ -19,15 +27,15 @@ public abstract class WSScriptlet implements Serializable {
 	public static final String DEFAULT_CHARSET = "utf-8";
 	public static final String DEFAULT_CONTENT_TYPE = "text/html";
 	
-	protected WebSocketScriptlet wsScriptlet = null;
+	protected WebsocketServer wsScriptlet = null;
 	protected String charset = DEFAULT_CHARSET;
 	protected String contentType = DEFAULT_CONTENT_TYPE;
 
 	/**
 	 * WebSocketScriptletから呼ばれる関数
 	 */
-	public void setServlet(WebSocketScriptlet servlet) {
-		wsScriptlet = servlet;
+	public void setServlet(WebsocketServer server) {
+		wsScriptlet = server;
 	}
 
 	/**
@@ -47,7 +55,7 @@ public abstract class WSScriptlet implements Serializable {
 	 * @return
 	 */
 	public String getServletName() {
-		return wsScriptlet.getServletName();
+		return "WebsocketServer";
 	}
 	
 	/**
@@ -55,14 +63,38 @@ public abstract class WSScriptlet implements Serializable {
 	 * @return
 	 */
 	public ServletContext getServletContext() {
-		return wsScriptlet.getServletContext();
+		return null;
 	}
 	/**
 	 * SecureServletの同名ラッパー関数
 	 * @return
 	 */
-	public String getScriptletPath() {
-		return wsScriptlet.getScriptletPath();
+	public String getScriptletPath(Session session) {
+		return wsScriptlet.getScriptletPath(session);
+	}
+	/**
+	 * 
+	 * @param session
+	 * @return
+	 */
+	public String getScriptletPath(ServletContext context) {
+		return wsScriptlet.getScriptletPath(context);
+	}
+
+	/**
+	 * SQLへのアクセスをJSONで行うためのクラス
+	 * @return
+	 */
+	public SQLiteCall getSqlDbWithJSon() {
+		return new SQLiteCall();
+	}
+	
+	/**
+	 * MongoDBへのアクセスをJSONで行うためのクラス
+	 * @return
+	 */
+	public MongoDBCall getMongoDbWithJSon() {
+		return new MongoDBCall();
 	}
 
 	/**
@@ -141,9 +173,12 @@ public abstract class WSScriptlet implements Serializable {
 	/**
 	 * SevureServletより呼ばれる起動メソッド
 	 * 継承クラスで実装します。
+	 * @param path
+	 * @param session
+	 * @param wsStatus
 	 * @throws SystemErrorException
 	 */
-	abstract public void start(BaseJsonRequest json, boolean isCallback) throws SystemErrorException;
+	abstract public void start(String path, Session session, WSScriptlet.WS_STATUS wsStatus) throws SystemErrorException;
 
 	/**
 	 * サーバサイドスクリプト内で利用する、複数のグローバルオブジェクトを応答します。<br>

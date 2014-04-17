@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<!--
+<web-app 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns="http://java.sun.com/xml/ns/javaee" 
 	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" 
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" 
 	id="WebApp_ID" 
 	version="3.0">
-    <display-name>Scriplet 0.9.1 </display-name>
+-->	
+<web-app 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+						http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	version="3.1"
+	metadata-complete="true">
+
+    <display-name>Scriplet 0.9.5 </display-name>
     <description>
       Scriplet 0.9.5 DEMOs.
     </description>
@@ -59,6 +70,7 @@
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
     
+    <!--
     <servlet>
         <servlet-name>WebSocketScriptlet.es</servlet-name>
         <servlet-class>info.dragonlady.scriptlet.WebSocketScriptlet</servlet-class>
@@ -71,6 +83,7 @@
         <servlet-name>WebSocketScriptlet.es</servlet-name>
         <url-pattern>/ws/*</url-pattern>
     </servlet-mapping>
+    -->
 	<session-config>
 		<session-timeout>5</session-timeout>
 	</session-config>

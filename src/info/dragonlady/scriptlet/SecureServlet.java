@@ -323,6 +323,9 @@ public class SecureServlet extends HttpServlet {
 							siteNode.appendChild(pageNode);
 						}
 					}
+					//
+					//TODO この後例外になることがある
+					//
 					if(staticFilePath.endsWith(extendName)) {
 						Scriptlet scriptlet = buildScriptlet(req);
 						scriptlet.setServlet(this, req, res);

@@ -492,6 +492,22 @@
   </td>
 </tr>
 <tr><td style="background: transparent; border-bottom: 1pt #000000 none; border-left: 1pt #000000 none; border-right: 1pt #000000 solid; border-top: 1pt #000000 none; height: 108pt; width: 33pt; line-height: 55pt;"> </td>
+<td colspan="3" style="background: #cbfff6; border: 1pt #000000 solid; height: 108pt; width: 85pt; "><div><div style="margin: 5pt; width: 85pt; "><div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 0pt; padding-top: 0pt; font-size: 11pt; line-height: 17pt;">mongodbjson</div>
+</div>
+</div>
+</td>
+<td colspan="8" style="background: #cbfff6; border: 1pt #000000 solid; height: 108pt; width: 446pt; "><div><div style="margin: 5pt; width: 446pt; ">
+<div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 1pt; padding-top: 0pt; font-size: 11pt; line-height: 17pt;">MongoDB簡易アクセスオブジェクト</div>
+<div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 1pt; font-size: 11pt; line-height: 17pt;">JSONを引数にmongoDBへのアクセスを行うオブジェクト</div>
+<div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 1pt; font-size: 11pt; line-height: 17pt;">例：
+<br />var removeData = "{'regist_ts':{'$lte':"+before15min+"}}";
+mongodbjson.removeDB(mongodb, 'chat_message_col', removeData);</div>
+<div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 0pt; font-size: 11pt; line-height: 17pt;">例： <br />mongodbjson.insertDB(mongodb, 'chat_message_col', JSON.stringify(jsonData));</div>
+</div>
+</div>
+</td>
+</tr>
+<tr><td style="background: transparent; border-bottom: 1pt #000000 none; border-left: 1pt #000000 none; border-right: 1pt #000000 solid; border-top: 1pt #000000 none; height: 108pt; width: 33pt; line-height: 55pt;"> </td>
 <td colspan="3" style="background: transparent; border: 1pt #000000 solid; height: 108pt; width: 85pt; "><div><div style="margin: 5pt; width: 85pt; "><div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 0pt; padding-top: 0pt; font-size: 11pt; line-height: 17pt;">dbaccesser</div>
 </div>
 </div>
@@ -501,6 +517,52 @@
 <div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 1pt; font-size: 11pt; line-height: 17pt;">db_config.xml（デフォルト）に定義したRDBアクセス設定、およびSQLをスクリプトレットより利用する事で、DBアプリケーションを簡単に構築可能です。</div>
 <div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 1pt; font-size: 11pt; line-height: 17pt;">DB設定XMLは、WEB-INF/db_config.xmlに定義するかWEB-INF/config.xmlに任意のパスを定義する必要があります。</div>
 <div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 0pt; font-size: 11pt; line-height: 17pt;">例： &lt;entry key='dbconfig'&gt;/usr/local/foo/db_config.xml&lt;/entry&gt;</div>
+</div>
+</div>
+</td>
+</tr>
+<tr><td style="background: transparent; border-bottom: 1pt #000000 none; border-left: 1pt #000000 none; border-right: 1pt #000000 solid; border-top: 1pt #000000 none; height: 108pt; width: 33pt; line-height: 55pt;"> </td>
+<td colspan="3" style="background: #cbfff6; border: 1pt #000000 solid; height: 108pt; width: 85pt; "><div><div style="margin: 5pt; width: 85pt; "><div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 0pt; padding-top: 0pt; font-size: 11pt; line-height: 17pt;">sqldbjson</div>
+</div>
+</div>
+</td>
+<td colspan="8" style="background: #cbfff6; border: 1pt #000000 solid; height: 108pt; width: 446pt; "><div><div style="margin: 5pt; width: 446pt; ">
+<div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 1pt; padding-top: 0pt; font-size: 11pt; line-height: 17pt;">RDB汎用簡易アクセスオブジェクト</div>
+<div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 1pt; font-size: 11pt; line-height: 17pt;"><div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 1pt; font-size: 11pt; line-height: 17pt;">JSONを引数にDBへのアクセスを行うオブジェクト</div>
+<div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 1pt; font-size: 11pt; line-height: 17pt;">例：
+<br />var params = [];
+<br />var tel             = '{"type":"STRING", "value":"'+gps.tel+'"}';
+<br />var imsi          = '{"type":"STRING", "value":"'+gps.imsi+'"}';
+<br />var gps_latitude  = '{"type":"STRING", "value":"'+gps.gps_latitude+'"}';
+<br />var gps_longitude = '{"type":"STRING", "value":"'+gps.gps_longitude+'"}';
+<br />var gps_time      = '{"type":"STRING", "value":"'+gps.gps_time+'"}';
+<br />var gps_accuracy  = '{"type":"STRING", "value":"'+gps.gps_accuracy+'"}';
+<br />var net_latitude  = '{"type":"STRING", "value":"'+gps.net_latitude+'"}';
+<br />var net_longitude = '{"type":"STRING", "value":"'+gps.net_longitude+'"}';
+<br />var net_time      = '{"type":"STRING", "value":"'+gps.net_time+'"}';
+<br />var net_accuracy  = '{"type":"STRING", "value":"'+gps.net_accuracy+'"}';
+<br />var charge        = '{"type":"STRING", "value":"'+gps.charge+'"}';
+<br />var network       = '{"type":"STRING", "value":"'+gps.network+'"}';
+params.push(tel);
+<br />params.push(imsi);
+<br />params.push(gps_latitude);
+<br />params.push(gps_longitude);
+<br />params.push(gps_time);
+<br />params.push(gps_accuracy);
+<br />params.push(net_latitude);
+<br />params.push(net_longitude);
+<br />params.push(net_time);
+<br />params.push(net_accuracy);
+<br />params.push(charge);
+<br />params.push(network);
+<br />var result = sqldbjson.execUpdateSQL(dbaccesser, 'insertgps', params);
+</div>
+<div class="paragraph 本文" style="line-height: 17pt; margin-bottom: 0pt; margin-top: 0pt; padding-bottom: 0pt; font-size: 11pt; line-height: 17pt;">例： <br />var params = [];
+<br />var tel = '{"type":"STRING", "value":"'+gps.tel+'"}';
+params.push(tel);
+<br />var result = sqldbjson.execSelectSQL(dbaccesser, 'selectgps', params);
+<br />var resultJson = JSON.parse(result);
+</div>
 </div>
 </div>
 </td>

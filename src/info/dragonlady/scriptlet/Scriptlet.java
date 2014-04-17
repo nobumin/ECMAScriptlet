@@ -48,7 +48,7 @@ abstract public class Scriptlet implements Serializable {
 	 * @author nobu
 	 *
 	 */
-	public class SQLiteCall
+	static public class SQLiteCall
 	{
 		private DBStatementParam[] createStatementParam(DBAccesser dba, String[] jsonList) throws JSONException {
 			DBStatementParam[] params = null;
@@ -230,7 +230,7 @@ abstract public class Scriptlet implements Serializable {
 	 * @author nobu
 	 *
 	 */
-	public class MongoDBCall {
+	static public class MongoDBCall {
 		/**
 		 * 
 		 * @param mongodb
@@ -301,6 +301,27 @@ abstract public class Scriptlet implements Serializable {
 				DBObject findObj = (DBObject)JSON.parse(queryJson);
 				DBObject updateObj = (DBObject)JSON.parse(updateJson);
 				collection.update(findObj, updateObj);
+			}
+			catch(Exception e) {
+				throw new UtilException(e);
+			}
+			finally {
+				mongodb.close();
+			}
+		}
+		/**
+		 * 
+		 * @param mongodb
+		 * @param colectionName
+		 * @param removeJson
+		 * @throws UtilException
+		 */
+		public void removeDB(MongoDBAccesser mongodb, String colectionName, String removeJson) throws UtilException {
+			try {
+				mongodb.open();
+				DBCollection collection = mongodb.getCollection(colectionName);
+				DBObject removeObj = (DBObject)JSON.parse(removeJson);
+				collection.remove(removeObj);
 			}
 			catch(Exception e) {
 				throw new UtilException(e);

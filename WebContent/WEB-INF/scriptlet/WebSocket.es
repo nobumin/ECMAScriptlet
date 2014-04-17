@@ -5,9 +5,9 @@
         <title>Tomcat WebSocket Chat</title>
         <script>
         <serverscript>
-        serverout.write("            var ip='"+request.getLocalAddr()+"';\n");
-        //serverout.write("            var host='"+request.getServerName()+"';");
-        serverout.write("            var host='dragonlady.info';");
+//        serverout.write("            var ip='"+request.getLocalAddr()+"';\n");
+        serverout.write("            var host='"+request.getServerName()+"';");
+//        serverout.write("            var host='dragonlady.info';");
         </serverscript>
         	var sid = (new Date()).getTime();
         	var ws = null;
@@ -17,8 +17,9 @@
             	var msg = document.getElementById("msg").value;
             	//path:要求時に呼び出すスクリプトレット　→　送信
             	//excute:バックグラウンドで処理する（タイマーで処理される）スクリプトレット　→　受信
-            	var sendData = '{"path":"/ws/request.es","query":"{\'sid\':\''+sid+'\', \'msg\':\''+msg+'\'}","response":"","excute":"/ws/event.es"}';
-                ws.send(sendData);
+//            	var sendData = '{"path":"/ws/request.es","query":"{\'sid\':\''+sid+'\', \'msg\':\''+msg+'\'}","response":"","excute":"/ws/event.es"}';
+//                ws.send(sendData);
+                ws.send(msg);
             }
             
             function closeConnect(){
@@ -33,26 +34,29 @@
             }
             function openConnect(){
             	closeConnect();
-            	//var ws = new WebSocket("ws://"+ip+":8080/ecmascriptlet/ws/WebSocketScriptlet");
-            	ws = new WebSocket("ws://"+host+"/ecmascriptlet/ws/WebSocketScriptlet.es");
+//            	ws = new WebSocket("ws://"+ip+":8080/ecmascriptlet/ws/WebSocketScriptlet");
+            	ws = new WebSocket("ws://"+host+":8080/ecmascriptlet/ws?script=ws/request.es");
+//            	ws = new WebSocket("ws://"+host+"/ecmascriptlet/ws?script=ws/request.es");
+//            	ws = new WebSocket("ws://"+host+"/ecmascriptlet/ws/WebSocketScriptlet.es");
                 ws.onopen = function(){
                 	console.log(new Date() + " onopen");
                 	wsSetup();
-                	var sendData = '{"path":"/ws/request.es","query":"{\'sid\':\''+sid+'\', \'hello\':\''+sid+'\'}","response":"","excute":"/ws/event.es"}';
-                    ws.send(sendData);
+//                	var sendData = '{"path":"/ws/request.es","query":"{\'sid\':\''+sid+'\', \'hello\':\''+sid+'\'}","response":"","excute":"/ws/event.es"}';
+//                    ws.send(sendData);
                 };
             }
             function wsSetup() {
                 ws.onmessage = function(event) {
-                	var jobj = JSON.parse(event.data);
-                	if(jobj.message && jobj.message.length > 0) {
-                		var messages = jobj.message.split(',');
-                		var v = "";
-                		for(var m in messages) {
-                			v += messages[m] + "\n";
-                		}
-                    	document.getElementById("event").value = v;
-                	}
+//                	var jobj = JSON.parse(event.data);
+//                	if(jobj.message && jobj.message.length > 0) {
+//                		var messages = jobj.message.split(',');
+//                		var v = "";
+//                		for(var m in messages) {
+//                			v += messages[m] + "\n";
+//                		}
+//                    	document.getElementById("event").value = v;
+//                	}
+                	document.getElementById("event").value += event.data + "\n";
                 };
                 ws.onclose = function(){
                 	console.log(new Date() + " onclose");

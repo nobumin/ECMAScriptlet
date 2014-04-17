@@ -27,6 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -75,7 +76,7 @@ public class DebugLogFilter implements Filter {
 	 * デバッグモードで利用する際、HTTP応答（出力ストリーム）の内容をキャッシュする為の出力ストリーム拡張クラス
 	 * @author nobu
 	 */
-	private class CachedServletOutputStream extends ServletOutputStream {
+	protected class CachedServletOutputStream extends ServletOutputStream {
 		private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		private ServletOutputStream superOut = null;
 		
@@ -143,6 +144,20 @@ public class DebugLogFilter implements Filter {
 	    public void flush() throws IOException{
 	    	superOut.flush();
 	    }
+
+	    //Tomcat8より
+		@Override
+		public boolean isReady() {
+			// TODO Auto-generated method stub
+			return true; //暫定
+		}
+
+	    //Tomcat8より
+		@Override
+		public void setWriteListener(WriteListener arg0) {
+			// TODO Auto-generated method stub
+			//暫定
+		}
 	}
 	
 	/**

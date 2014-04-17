@@ -3,6 +3,8 @@ package info.dragonlady.scriptlet;
 
 import java.util.Map;
 
+import javax.websocket.Session;
+
 public class DefaultWSScriptlet extends WSScriptlet {
 
 	/**
@@ -11,9 +13,9 @@ public class DefaultWSScriptlet extends WSScriptlet {
 	private static final long serialVersionUID = -4444840273875879854L;
 
 	@Override
-	public void start(BaseJsonRequest json, boolean isCallback) throws SystemErrorException {
+	public void start(String path, Session session, WSScriptlet.WS_STATUS wsStatus) throws SystemErrorException {
 		try {
-			ESEngine.executeScript(this, json, isCallback);
+			ESEngine.executeScript(this, path, session, wsStatus);
 		}
 		catch(Exception e) {
 			e.printStackTrace(System.out);

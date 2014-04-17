@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
+import javax.websocket.Session;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -59,7 +60,7 @@ public class TimerLaunchListener extends WSScriptlet implements ServletContextLi
 	private Properties properties = new Properties();
 	private long sitemapFileModify = -1;
 	private ServletContextEvent servletContextEvent= null;
-	private HashMap<String, BaseJsonRequest>jsonMap = new HashMap<String, BaseJsonRequest>();
+	private Vector<String>pathList = new Vector<String>();
 
 	private static ScheduledExecutorService scheduler = null;
 	private static ScheduledFuture<?> timeHandle = null;
@@ -103,32 +104,17 @@ public class TimerLaunchListener extends WSScriptlet implements ServletContextLi
 			try {
 				String batchDir = getScriptletPath();
 				File baseDir = new File(batchDir);
-				if(baseDir.exists() && baseDir.isDirectory()) {
+				if(baseDir != null && baseDir.exists() && baseDir.isDirectory()) {
 					File scripts[] = baseDir.listFiles(new FileAcceptFilter());
-					Vector<String> paths = new Vector<String>();
 					for(int i=0;i<scripts.length;i++) {
-						if(!jsonMap.containsKey(scripts[i].getName())) {
-							BaseJsonRequest baseJson = new BaseJsonRequest();
-							baseJson.path = "";
-							baseJson.excute = File.separator+scripts[i].getName();
-							baseJson.response = "";
-							baseJson.query = "";
-							baseJson.session = null;
-							jsonMap.put(scripts[i].getName(), baseJson);
+						if(!pathList.contains(scripts[i].getName())) {
+							pathList.add(scripts[i].getName());
 						}
-						paths.add(scripts[i].getName());
 						try {
-							ESEngine.executeScript(scriptlet, jsonMap.get(scripts[i].getName()), true);
+							ESEngine.executeScript(scriptlet, scripts[i].getName(), scriptlet.getServletContext(), WSScriptlet.WS_STATUS.EXEC);
 						}
 						catch(Exception e) {
 							e.printStackTrace(System.err);
-						}
-					}
-					Iterator<String> it = jsonMap.keySet().iterator();
-					while(it.hasNext()) {
-						String key = it.next();
-						if(!paths.contains(key)) {
-							jsonMap.remove(key);
 						}
 					}
 				}
@@ -313,7 +299,6 @@ public class TimerLaunchListener extends WSScriptlet implements ServletContextLi
 	}
 
 	/**
-	 * for Jetty Server
 	 * @return
 	 */
 	protected String getRealPath() {
@@ -333,12 +318,25 @@ public class TimerLaunchListener extends WSScriptlet implements ServletContextLi
 		if(properties.getProperty(BATCH_PATH) != null && properties.getProperty(BATCH_PATH).length() > 2) {
 			path = properties.getProperty(BATCH_PATH);
 		}
-		if(path.endsWith(File.separator)) {
-			path = path.substring(0, path.lastIndexOf(File.separator));
+		if(!path.endsWith(File.separator)) {
+			path += File.separator;
 		}
 		return path;
 	}
 
+	/**
+	 * 
+	 */
+	public String getScriptletPath(Session session) {
+		return getScriptletPath();
+	}
+
+	/**
+	 * 
+	 */
+	public String getScriptletPath(ServletContext context) {
+		return getScriptletPath();
+	}
 	
 	/**
 	 * 設定ファイルに指定した、スクリプトレットの拡張子を応答する。
@@ -459,8 +457,7 @@ public class TimerLaunchListener extends WSScriptlet implements ServletContextLi
 	}
 	
 	@Override
-	public void start(BaseJsonRequest json, boolean isCallback)
-			throws SystemErrorException {
+	public void start(String path, Session session, WSScriptlet.WS_STATUS wsStatus) throws SystemErrorException {
 		// TODO Auto-generated method stub
 		
 	}

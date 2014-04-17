@@ -345,6 +345,7 @@ public class ESCylinder{
 		ScriptableObject.putProperty(cylinder.scriptable, "syserr", jsErr);
 		Object jsDBAccesser = Context.javaToJS(dba, cylinder.scriptable);
 		ScriptableObject.putProperty(cylinder.scriptable, "dbaccesser", jsDBAccesser);
+
 		return cylinder;
 	}
 

@@ -1,37 +1,46 @@
 <serverscript>
 
-var queryString = jsonReq.query.replaceAll("'", '"');
-var queryObj = JSON.parse(queryString);
-jsonReq.setSession(queryString); //event.esでsidをセッションとして利用する場合
-//jsonReq.setResult('{"message":"'+queryObj.msg+'"}');
-
-mongodb.open();
 try {
-	var chatMessageCol = mongodb.getCollection("chat_message_col");
-
+	var sessions = wssession.getOpenSessions();
+	if(sessions.size() > 0) {
+		var it = sessions.iterator();
+		while(it.hasNext()) {
+			var session = it.next();
+			var endpoint = session.getAsyncRemote();
+			if(wsstatus == "open") { //接続時
+				endpoint.sendText("Hello from "+wssession.getId());
+			}else if(wsstatus == "close") { //切断時
+				endpoint.sendText("Bye from "+wssession.getId());
+			}else if(wsstatus == "error") { //エラー時
+				//nop
+			}else if(wsstatus == "exec") { //ユーザ実行時
+				endpoint.sendText(wssession.getId()+":"+wssession.getUserProperties().get('userdata').toString());
+			}
+		}
+	}
 	var now = new Date();
 	var before15min = now.getTime() - (5*60*1000);
-	var removeNode = mongodb.createDBQuery();
-	var removeSetDateNode = mongodb.createDBQuery();
-	removeSetDateNode.put("$lte", before15min);
-	removeNode.put("regist_ts", removeSetDateNode);
-	chatMessageCol.remove(removeNode);
-
-	var newMessage = mongodb.createDBObject();
-	if(queryObj.msg != null && queryObj.msg.length > 0) {
-		newMessage.put('sid',queryObj.sid);
-		newMessage.put('comment',queryObj.msg);
-		newMessage.put('regist_ts',now.getTime());
-		chatMessageCol.insert(newMessage);
-	}else if(queryObj.hello != null && queryObj.hello.length > 0) {
-		newMessage.put('sid',queryObj.sid);
-		newMessage.put('comment',"connect now");
-		newMessage.put('regist_ts',now.getTime());
-		chatMessageCol.insert(newMessage);
+	var removeData = "{'regist_ts':{'$lte':"+before15min+"}}";
+	mongodbjson.removeDB(mongodb, 'chat_message_col', removeData);
+	
+	var jsonData = {};
+	jsonData.sid = wssession.getId();
+	jsonData['regist_ts'] = now.getTime();
+	if(wsstatus == "open") { //接続時
+		jsonData['comment'] = "connect now";
+		mongodbjson.insertDB(mongodb, 'chat_message_col', JSON.stringify(jsonData));
+	}else if(wsstatus == "close") { //切断時
+		jsonData['comment'] = "disconnect now";
+		mongodbjson.insertDB(mongodb, 'chat_message_col', JSON.stringify(jsonData));
+	}else if(wsstatus == "exec") { //ユーザ実行時
+		jsonData['comment'] = wssession.getUserProperties().get('userdata').toString();
+		mongodbjson.insertDB(mongodb, 'chat_message_col', JSON.stringify(jsonData));
 	}
-} catch(e) {
-	sysout.println(e);
+} 
+catch(e) {
+	sysout.println(e.javaException);
+//	sysout.println(e.stack);
+//	e.printStackTrace(sysout);
 }
-mongodb.close();
 
 </serverscript>

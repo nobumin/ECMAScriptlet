@@ -1,5 +1,6 @@
 package info.dragonlady.scriptlet;
 
+import info.dragonlady.scriptlet.WSScriptlet.WS_STATUS;
 import info.dragonlady.util.DocumentAWS;
 
 import java.io.BufferedReader;
@@ -9,6 +10,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.websocket.Session;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
@@ -240,7 +243,7 @@ public class ESCylinderWS {
 	 * @return：シリンダ
 	 * @throws IOException
 	 */
-	public static ESCylinderWS createInstanse(WSScriptlet slet, BaseJsonRequest json, String charCode) throws IOException{
+	public static ESCylinderWS createInstanse(WSScriptlet slet, Session session, WSScriptlet.WS_STATUS wsStatus, String charCode) throws IOException{
 		ESCylinderWS cylinder = new ESCylinderWS(slet);
 		//Rhinoの開始宣言
 		ContextFactory cxFactory = new ContextFactory();
@@ -259,8 +262,22 @@ public class ESCylinderWS {
 			}
 		}
 		
-		Object jsonObject = Context.javaToJS(json, cylinder.scriptable);
-		ScriptableObject.putProperty(cylinder.scriptable, "jsonReq", jsonObject);
+		Object statusObject = null;
+		if(wsStatus == WS_STATUS.OPEN) {
+			statusObject = Context.javaToJS("open", cylinder.scriptable);
+		}else if(wsStatus == WS_STATUS.CLOSE) {
+			statusObject = Context.javaToJS("close", cylinder.scriptable);
+		}else if(wsStatus == WS_STATUS.ERROR) {
+			statusObject = Context.javaToJS("error", cylinder.scriptable);
+		}else{
+			statusObject = Context.javaToJS("exec", cylinder.scriptable);
+		}
+		ScriptableObject.putProperty(cylinder.scriptable, "wsstatus", statusObject);
+
+		if(session != null) {
+			Object sessionObject = Context.javaToJS(session, cylinder.scriptable);
+			ScriptableObject.putProperty(cylinder.scriptable, "wssession", sessionObject);
+		}
 
 		Object jsOut = Context.javaToJS(System.out, cylinder.scriptable);
 		ScriptableObject.putProperty(cylinder.scriptable, "sysout", jsOut);
@@ -276,7 +293,13 @@ public class ESCylinderWS {
 
 		Object jsMongoAccesser = Context.javaToJS(cylinder.scriptlet.getMongoDBAccesser(), cylinder.scriptable);
 		ScriptableObject.putProperty(cylinder.scriptable, "mongodb", jsMongoAccesser);
+
+		Object jsMongoJSon = Context.javaToJS(cylinder.scriptlet.getMongoDbWithJSon(), cylinder.scriptable);
+		ScriptableObject.putProperty(cylinder.scriptable, "mongodbjson", jsMongoJSon);
 		
+		Object jsSQLJSon = Context.javaToJS(cylinder.scriptlet.getSqlDbWithJSon(), cylinder.scriptable);
+		ScriptableObject.putProperty(cylinder.scriptable, "sqldbjson", jsSQLJSon);
+
 		return cylinder;
 	}
 	
