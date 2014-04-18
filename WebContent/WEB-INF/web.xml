@@ -87,4 +87,13 @@
 	<session-config>
 		<session-timeout>5</session-timeout>
 	</session-config>
+
+	<context-param>
+		<param-name>org.apache.tomcat.websocket.textBufferSize</param-name>
+		<param-value>104857600</param-value>
+	</context-param>
+	<context-param>
+		<param-name>org.apache.tomcat.websocket.binaryBufferSize</param-name>
+		<param-value>104857600</param-value>
+	</context-param>
 </web-app>

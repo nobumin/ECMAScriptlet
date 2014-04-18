@@ -125,9 +125,9 @@ public class WebsocketServer {
 
 	@OnMessage
 	public void onMesage(ByteBuffer buffer, boolean last, Session session, @PathParam("subpath")String subPath) {
-//System.out.println(last?"LAST!!":"NOT LAST");
 		Map<String, Object> userProp = session.getUserProperties();
 		userProp.put("userdata", buffer);
+		userProp.put("binaryLast", last);
 		try {
 			execScript(session, WSScriptlet.WS_STATUS.EXEC, null, null);
 		}
