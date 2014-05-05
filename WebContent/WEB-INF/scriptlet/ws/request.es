@@ -38,8 +38,8 @@ try {
 	}
 } 
 catch(e) {
-	sysout.println(e.javaException);
-//	sysout.println(e.stack);
+//	sysout.println(e.javaException);
+	sysout.println(e.stack);
 //	e.printStackTrace(sysout);
 }
 

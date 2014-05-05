@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashSet;
@@ -199,6 +200,7 @@ public class WebsocketServer {
 					}
 					if(siteNode.hasAttribute("wsclass")) {
 						defaultWSScriptClassName = siteNode.getAttribute("wsclass");
+						System.out.printf("WSCLASS:%s\n", defaultWSScriptClassName);
 						return;
 					}
 				}
@@ -331,6 +333,16 @@ public class WebsocketServer {
 	protected String getRealPath(Session session) throws URISyntaxException, MalformedURLException {
 		String realPath = "";
 		File binPath = new File(new File("").getAbsolutePath());
+		if(binPath.getParentFile() == null) {
+			ClassLoader cl = getClass().getClassLoader();
+			URL path4Url = null;
+			if (cl==null) {
+				path4Url = ClassLoader.getSystemResource("/info/dragonlady/scriptlet/demo/ListScroll.csv");
+			}
+			path4Url = cl.getResource("/info/dragonlady/scriptlet/demo/ListScroll.csv");
+			String path = new File(path4Url.toURI()).getAbsolutePath();
+			binPath = new File(path.substring(0, path.indexOf("webapps")+"webapps".length()));
+		}
 		if(binPath.isDirectory()) {
 			String homePath = binPath.getParentFile().getAbsolutePath();
 			if(!homePath.endsWith("/")) {
