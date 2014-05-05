@@ -369,7 +369,12 @@ public class DBAccesser {
 						record.put(columnName, rs.getNCharacterStream(columnName));
 					}
 					if(type == Types.INTEGER || type == Types.TINYINT || type == Types.SMALLINT || type == Types.NUMERIC || type == Types.DECIMAL) {
-						record.put(columnName, rs.getInt(columnName));
+						try {
+							record.put(columnName, rs.getLong(columnName));
+						}
+						catch(Exception e) {
+							record.put(columnName, rs.getInt(columnName));
+						}
 					}
 					if(type == Types.BIGINT) {
 						try {
