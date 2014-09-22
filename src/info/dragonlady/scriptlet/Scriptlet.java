@@ -268,6 +268,41 @@ abstract public class Scriptlet implements Serializable {
 		 * 
 		 * @param mongodb
 		 * @param colectionName
+		 * @param queryJson
+		 * @param sortJson
+		 * @return
+		 * @throws UtilException
+		 */
+		public String findDBWithSort(MongoDBAccesser mongodb, String colectionName, String queryJson, String sortJson) throws UtilException {
+			StringBuffer result = new StringBuffer();
+			result.append("[");
+			try {
+				mongodb.open();
+				DBCollection collection = mongodb.getCollection(colectionName);
+				DBObject findObj = (DBObject)JSON.parse(queryJson);
+				DBObject sortObj = (DBObject)JSON.parse(sortJson);
+				DBCursor cursor = collection.find(findObj).sort(sortObj);
+				while(cursor.hasNext()) {
+					if(result.length() > 1) {
+						result.append(",");
+					}
+					result.append(cursor.next().toString());
+				}
+			}
+			catch(Exception e) {
+				throw new UtilException(e);
+			}
+			finally {
+				mongodb.close();
+			}
+			result.append("]");
+			return result.toString();
+		}
+
+		/**
+		 * 
+		 * @param mongodb
+		 * @param colectionName
 		 * @param insertJson
 		 * @throws UtilException
 		 */
