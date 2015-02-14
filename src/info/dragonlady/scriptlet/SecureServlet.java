@@ -230,7 +230,7 @@ public class SecureServlet extends HttpServlet {
 	 * @throws InstantiationException 
 	 */
 	protected Scriptlet buildScriptlet(HttpServletRequest req) throws SystemErrorException, ClassNotFoundException, InstantiationException, java.lang.IllegalAccessException {
-		String myself = getRelativePath(req);
+		String myself = getRelativePath(req).replaceAll("//", "/");
 		NodeList pageNodes = sitemapXML.getElementsByTagName("page");
 		for(int i=0;i<pageNodes.getLength();i++) {
 			Element pageNode = (Element)pageNodes.item(i);
