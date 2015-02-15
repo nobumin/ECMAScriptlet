@@ -8,9 +8,14 @@ import info.dragonlady.websocket.WebsocketServer;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.ServletContext;
 import javax.websocket.Session;
+
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.Scriptable;
 
 public abstract class WSScriptlet implements Serializable {
 	public enum WS_STATUS {
@@ -167,8 +172,19 @@ public abstract class WSScriptlet implements Serializable {
 		wsScriptlet.log(message, t);
 	}
 	
-	//TODO
-	//コールバックの仕組みを実装
+	/**
+	 * JavaScriptの無名関数を処理するためのヘルパーメソッド
+	 * @param function:引数に指定された関数を指定
+	 * @param args:無名関数へ渡す引数の配列
+	 * @return
+	 */
+	public Object execAnonymousFunction(Object function, Vector<Object> args) {
+		ContextFactory cxFactory = new ContextFactory();
+		Context cx = cxFactory.enterContext();
+		Scriptable scope = cx.initStandardObjects();
+		org.mozilla.javascript.BaseFunction anonymousFunc = (org.mozilla.javascript.BaseFunction)function;
+		return anonymousFunc.call(cx, scope, anonymousFunc, args.toArray());
+	}
 
 	/**
 	 * SevureServletより呼ばれる起動メソッド
